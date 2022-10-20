@@ -1,17 +1,9 @@
+const client = require("../utils/ecsClient.js");
+
 const {
-  ECSClient,
-  RunTaskCommand,
   RegisterTaskDefinitionCommand,
+  ListTaskDefinitionsCommand,
 } = require("@aws-sdk/client-ecs");
-
-const config = {
-  region: "us-east-1",
-  accessKeyId: process.env.AWS_IAM_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_IAM_SECRET_ACCESS_KEY,
-};
-
-const client = new ECSClient(config);
-
 /*
 Example request 
 {
@@ -26,11 +18,9 @@ Example request
 		}]
 	}],
 	"family": "SetupCodeServer",
-  --
-  
 }
 */
-const createTaskDefinition = async (containerDefinition, family) => {
+const createWorkspaceTemplate = async (containerDefinition, family) => {
   const input = {
     containerDefinitions: containerDefinition,
     family: family,
@@ -45,34 +35,28 @@ const createTaskDefinition = async (containerDefinition, family) => {
   }
 };
 
-/*
-  Run a new task 
-
-  example request: 
-  {
-    "count": 1,
-    "taskDefinition": "hello_world",
-    "student_id": "023jfaosdlfj"
-  }
-*/
-const runTask = async (taskDefinitionARN) => {
+/**
+ * Get All Workspace Templates
+ */
+const getAllWorkspaceTemplates = async () => {
   const input = {
-    cluster: process.env.CLUSTER,
-    taskDefinition: taskDefinitionARN,
-    count: 1,
+    // familyPrefix: null,
+    maxResults: 100,
+    // nextToken: null,
+    sort: "ASC",
+    status: "ACTIVE",
   };
 
-  const command = new RunTaskCommand(input);
-
   try {
-    const data = await client.send(command);
-    return data;
+    const command = new ListTaskDefinitionsCommand(input);
+    const response = await client.send(command);
+    return response;
   } catch (err) {
     console.error(err.message);
   }
 };
 
 module.exports = {
-  runTask,
-  createTaskDefinition,
+  createWorkspaceTemplate,
+  getAllWorkspaceTemplates,
 };

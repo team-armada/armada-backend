@@ -3,27 +3,39 @@
 ### Todos
 
 - [x] Create API endpoint to _run a new task_
+
   - [x] Create an express server
   - [x] Install AWS ECS SDK
   - [x] Authenticate to AWS
   - [x] Connect to our running cluster
   - [x] Run a task using the ECS SDK
   - [x] Create a task definition
+
   ***
-  - [ ] Stop/Pause a task
-  - [ ] Delete a task
-  - [ ] Delete a task definition
-  - [ ] Edit a task definition
-    - Limit, reduce or increase running tasks
-  - [ ] List all currently running tasks
-  - [ ] List all currently running tasks of a specific task definition
-  - [ ] List all task definitions
-  - [ ] Whitelist a student
-    - Black list: have a list of student that don't have access
-    - White list: have a list of student that have access
-  - [ ] Persist workspace files to a volume
-    - Associate with a student ID
-  - [ ] Add database to the workspace (different type of task?)
+
+  - ATTENTION
+
+    - Convert tasks to services
+
+  - [x] Stop/pause a task (workspace)
+  - [ ] Delete a task (workspace)
+  - [ ] Delete a task definition (workspace template)
+  - [ ] Edit a task definition (workspace template)
+    - Limit running tasks
+    - Reduce running tasks
+    - Increase running tasks
+
+---
+
+- [ ] List all currently running tasks
+- [ ] List all currently running tasks of a specific task definition
+- [ ] List all task definitions
+- [ ] Whitelist a student
+  - Black list: have a list of student that don't have access
+  - White list: have a list of student that have access
+- [ ] Persist workspace files to a volume
+  - Associate with a student ID
+- [ ] Add database to the workspace (different type of task?)
 
 ## Workflow
 
