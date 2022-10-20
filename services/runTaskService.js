@@ -2,14 +2,13 @@ const { ECSClient, RunTaskCommand } = require('@aws-sdk/client-ecs');
 
 const config = {
   region: "us-east-1",
-  credentials: {
-    AccessKeyId: process.env.AWS_IAM_ACCESS_KEY_ID, 
-    SecretAccessKey: process.env.AWS_IAM_SECRET_ACCESS_KEY, 
-  },
+  accessKeyId: process.env.AWS_IAM_ACCESS_KEY_ID, 
+  secretAccessKey: process.env.AWS_IAM_SECRET_ACCESS_KEY, 
 }
 
 const client = new ECSClient(config); 
 
+console.log(client); 
 
 
 const runTask = async (count=1, taskDefinition) => {
@@ -21,6 +20,7 @@ const runTask = async (count=1, taskDefinition) => {
   const input = {
     cluster: process.env.CLUSTER,
     taskDefinition: taskDefinition
+    
   }
 
   const command  = new RunTaskCommand(input); 
