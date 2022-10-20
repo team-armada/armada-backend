@@ -13,14 +13,14 @@ const PORT = process.env.PORT;
 app.use(cors())
 
 
+/*
+  example request: 
+  {
+    "count": 1,
+    "taskDefinition": "hello_world"
+  }
+*/
 app.post('/task', async (req, res) => {
-  /*
-    example request: 
-    {
-      "count": 1,
-      "taskDefinition": "hello_world"
-    }
-  */
   const { count, taskDefinition } = req.body; 
   // use `count` and `taskDefinition` to run task 
   const result = await runTask(count, taskDefinition)
