@@ -3,7 +3,6 @@
 ### Todos
 
 - [x] Create API endpoint to _run a new task_
-
   - [x] Create an express server
   - [x] Install AWS ECS SDK
   - [x] Authenticate to AWS
@@ -11,19 +10,17 @@
   - [x] Run a task using the ECS SDK
   - [x] Create a task definition
 
-  ***
+---
 
-  - ATTENTION
+#### Current tasks
 
-    - Convert tasks to services
-
-  - [x] Stop/pause a task (workspace)
-  - [ ] Delete a task (workspace)
-  - [ ] Delete a task definition (workspace template)
-  - [ ] Edit a task definition (workspace template)
-    - Limit running tasks
-    - Reduce running tasks
-    - Increase running tasks
+- [x] Stop/pause a task (workspace)
+- [ ] Delete a task (workspace)
+- [ ] Delete a task definition (workspace template)
+- [ ] Edit a task definition (workspace template)
+  - Limit running tasks
+  - Reduce running tasks
+  - Increase running tasks
 
 ---
 
@@ -68,9 +65,7 @@ https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecs/interf
 
 https://aws.amazon.com/premiumsupport/knowledge-center/iam-validate-access-credentials/
 
+## Co-Author Emails
 
-
-## Co-Author Emails 
-
-Co-authored-by: Sergio Pichardo <sergiopichardo@users.noreply.github.com>
 Co-authored-by: Author: Natalie Martos <natalie.martos@gmail.com>
+Co-authored-by: Sergio Pichardo <sergiopichardo@users.noreply.github.com>

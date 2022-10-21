@@ -5,13 +5,11 @@ const { StatusCodes } = require("http-status-codes");
 
 require("dotenv").config();
 
-const { 
-  runWorkspace, 
-  stopWorkspace 
-} = require("./services/workspaceService");
+const { runWorkspace, stopWorkspace } = require("./services/workspaceService");
 
 const {
   createWorkspaceTemplate,
+  deleteWorkspaceTemplate,
   getAllWorkspaceTemplates,
 } = require("./services/templateService");
 
@@ -26,7 +24,7 @@ app.use(cors());
  * Get all workspace templates
  */
 app.get("/templates", async (req, res) => {
-  // ARN
+  // Plans for the future
   /*
     [
       {
@@ -99,15 +97,15 @@ app.put("/workspaces", async (req, res) => {
 });
 
 /**
- * Delete a workspace
+ * Delete a workspace template
  */
 app.delete("/workspaces", async (req, res) => {
-  const { taskID, reason } = req.body;
+  const { taskDefinitionArn } = req.body;
 
-  const result = await deleteWorkspace(taskID, reason);
+  const result = await deleteWorkspaceTemplate(taskDefinitionArn);
 
   res.status(StatusCodes.ACCEPTED).json({
-    message: `Success: Deleted workspace with id ${taskID}`,
+    message: `Success: Deleted workspace template with ARN ${taskDefinitionArn}`,
     result: result,
   });
 });
