@@ -1,11 +1,9 @@
 const {
-  ECSClient,
-  RunTaskCommand,
-  RegisterTaskDefinitionCommand,
+  ECSClient
 } = require("@aws-sdk/client-ecs");
 
 const config = {
-  region: "us-east-1",
+  region: process.env.AWS_REGION,
   accessKeyId: process.env.AWS_IAM_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_IAM_SECRET_ACCESS_KEY,
 };

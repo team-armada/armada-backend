@@ -2,7 +2,14 @@ const express = require("express");
 const cors = require("cors");
 
 const { StatusCodes } = require("http-status-codes");
-const { runWorkspace, stopWorkspace } = require("./services/workspaceService");
+
+require("dotenv").config();
+
+const { 
+  runWorkspace, 
+  stopWorkspace 
+} = require("./services/workspaceService");
+
 const {
   createWorkspaceTemplate,
   getAllWorkspaceTemplates,
@@ -11,7 +18,6 @@ const {
 const app = express();
 app.use(express.json());
 
-require("dotenv").config();
 const PORT = process.env.PORT;
 
 app.use(cors());
