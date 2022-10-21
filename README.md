@@ -67,3 +67,10 @@ https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecs/classe
 https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecs/interfaces/starttaskcommandinput.html
 
 https://aws.amazon.com/premiumsupport/knowledge-center/iam-validate-access-credentials/
+
+
+
+## Co-Author Emails 
+
+Co-authored-by: Sergio Pichardo <sergiopichardo@users.noreply.github.com>
+Co-authored-by: Author: Natalie Martos <natalie.martos@gmail.com>
