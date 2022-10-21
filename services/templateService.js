@@ -3,6 +3,7 @@ const client = require("../utils/ecsClient.js");
 const {
   RegisterTaskDefinitionCommand,
   ListTaskDefinitionsCommand,
+  DeregisterTaskDefinitionCommand,
 } = require("@aws-sdk/client-ecs");
 /*
 Example request 
@@ -56,7 +57,26 @@ const getAllWorkspaceTemplates = async () => {
   }
 };
 
+/**
+ * Deregister a workspace template
+ */
+const deleteWorkspaceTemplate = async (taskDefinitionARN) => {
+  const input = {
+    taskDefinition: taskDefinitionARN,
+  };
+
+  const command = new DeregisterTaskDefinitionCommand(input);
+
+  try {
+    const data = await client.send(command);
+    return data;
+  } catch (err) {
+    console.error(err.message);
+  }
+};
+
 module.exports = {
   createWorkspaceTemplate,
   getAllWorkspaceTemplates,
+  deleteWorkspaceTemplate,
 };

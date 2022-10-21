@@ -1,6 +1,4 @@
-const {
-  ECSClient
-} = require("@aws-sdk/client-ecs");
+const { ECSClient } = require("@aws-sdk/client-ecs");
 
 const config = {
   region: process.env.AWS_REGION,

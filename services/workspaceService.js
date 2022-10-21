@@ -51,31 +51,7 @@ const stopWorkspace = async (taskID, reason = "SESSION_ENDED") => {
   }
 };
 
-/**
- * Delete a workspace
- * @param {string} taskID - workspace id
- *                        - e.g. "1dc5c17a-422b-4dc4-b493-371970c6c4d6"
- * @param {string} reason - reason for stopping workspace
- */
-const deleteWorkspace = async (taskID, reason = "SESSION_ENDED") => {
-  const input = {
-    cluster: process.env.CLUSTER,
-    reason: reason,
-    task: taskID,
-  };
-
-  const command = new StopTaskCommand(input);
-
-  try {
-    const data = await client.send(command);
-    return data;
-  } catch (err) {
-    console.error(err.message);
-  }
-};
-
 module.exports = {
   runWorkspace,
   stopWorkspace,
-  deleteWorkspace,
 };

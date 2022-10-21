@@ -1,31 +1,26 @@
 # Armada Backend
 
-### Todos
+## Completed Todos
 
-- [x] Create API endpoint to _run a new task_
+- [x] create ecs client and authenticate to AWS
+- [x] run a workspace
+- [x] stop workspace
+- [x] create workspace template
+- [x] get all workspace templates
+- [x] delete workspace templates
 
-  - [x] Create an express server
-  - [x] Install AWS ECS SDK
-  - [x] Authenticate to AWS
-  - [x] Connect to our running cluster
-  - [x] Run a task using the ECS SDK
-  - [x] Create a task definition
+#### Current tasks
 
-  ***
-
-  - ATTENTION
-
-    - Convert tasks to services
-
-  - [x] Stop/pause a task (workspace)
-  - [ ] Delete a task (workspace)
-  - [ ] Delete a task definition (workspace template)
-  - [ ] Edit a task definition (workspace template)
-    - Limit running tasks
-    - Reduce running tasks
-    - Increase running tasks
+- [ ] Delete a workspace
+- [ ] Delete a workspace template
+- [ ] Edit a workspace template
+  - Limit running tasks
+  - Reduce running tasks
+  - Increase running tasks
 
 ---
+
+## Brainstorming
 
 - [ ] List all currently running tasks
 - [ ] List all currently running tasks of a specific task definition
@@ -36,41 +31,26 @@
 - [ ] Persist workspace files to a volume
   - Associate with a student ID
 - [ ] Add database to the workspace (different type of task?)
-
-## Workflow
-
 - When admin clicks on `Create workspace template` template button
   - Create task definition
 - When user clicks on `Launch workspace`
   - Run the task definition
 
-## Notes
+## Useful Links
 
-## ECS Client
+### ECS SDK docs
 
-https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecs/classes/ecs.html
+https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecs/index.html
 
-## ECS Client Config
+### ECS Docs
 
-https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecs/interfaces/ecsclientconfig.html
+https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Operations.html
 
-## API Run Task
+### ECS CDK
 
-https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html
+https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ecs-readme.html
 
-## Run Task
+## Co-Author Emails
 
-https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecs/classes/runtaskcommand.html
-
-## Start a task
-
-https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-ecs/interfaces/starttaskcommandinput.html
-
-https://aws.amazon.com/premiumsupport/knowledge-center/iam-validate-access-credentials/
-
-
-
-## Co-Author Emails 
-
-Co-authored-by: Sergio Pichardo <sergiopichardo@users.noreply.github.com>
 Co-authored-by: Author: Natalie Martos <natalie.martos@gmail.com>
+Co-authored-by: Sergio Pichardo <sergiopichardo@users.noreply.github.com>
