@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { StatusCodes } from 'http-status-codes';
 import * as dotenv from 'dotenv';
-import morgan from 'morgan';
+import morganBody from 'morgan-body';
 
 import {
   getWorkspaces,
@@ -25,7 +25,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(morgan('dev'));
+morganBody(app);
 
 const PORT = process.env.PORT;
 
