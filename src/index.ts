@@ -2,12 +2,14 @@ import express from 'express';
 import cors from 'cors';
 import { StatusCodes } from 'http-status-codes';
 import * as dotenv from 'dotenv';
+import morgan from 'morgan';
 
 import {
   getWorkspaces,
   runWorkspace,
   stopWorkspace,
 } from './services/workspaceService';
+
 import {
   createWorkspaceTemplate,
   deleteWorkspaceTemplate,
@@ -23,6 +25,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(morgan('dev'));
 
 const PORT = process.env.PORT;
 
@@ -36,19 +39,19 @@ app.get('/templates', async (req, res) => {
   /*
     [
       {
-        templateID: "asldkfjawoiejfa", 
-        title: family, 
-        workspacesCount: 20 
+        templateID: "asldkfjawoiejfa",
+        title: family,
+        workspacesCount: 20
       },
       {
-        templateID: "asldkfjawoiejfa", 
-        title: family, 
-        workspacesCount: 20 
+        templateID: "asldkfjawoiejfa",
+        title: family,
+        workspacesCount: 20
       },
       {
-        templateID: "asldkfjawoiejfa", 
-        title: family, 
-        workspacesCount: 20 
+        templateID: "asldkfjawoiejfa",
+        title: family,
+        workspacesCount: 20
       },
     ]
   */
