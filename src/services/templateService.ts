@@ -25,7 +25,7 @@ export interface IContainerDefinition {
 
 /*
 Example request
-{
+input: {
 	"containerDefinition": [{
 		"name": "exampleContainer",
 		"image": "jdguillaume/base-code-server-no-auth",

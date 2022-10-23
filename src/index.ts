@@ -124,7 +124,7 @@ app.post(
     const { taskDefinition } = req.body;
 
     if (!taskDefinition) {
-      return res.status(400).send('A task definition is required.');
+      return res.status(StatusCodes.BAD_REQUEST).send('A task definition is required.');
     }
 
     const result = await runWorkspace(taskDefinition);
@@ -151,11 +151,11 @@ app.put(
     const { taskID, reason } = req.body;
 
     if (!taskID) {
-      return res.status(400).send('A taskID is required.');
+      return res.status(StatusCodes.BAD_REQUEST).send('A taskID is required.');
     }
 
     if (!reason) {
-      return res.status(400).send('A reason is required.');
+      return res.status(StatusCodes.BAD_REQUEST).send('A reason is required.');
     }
 
     const result = await stopWorkspace(taskID, reason);
