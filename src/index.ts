@@ -70,12 +70,14 @@ app.post(
   '/templates',
   async (
     req: TypedRequestBody<{
-      containerDefinition: ContainerSettings[] | undefined;
-      family: string | undefined;
+      data: {
+        containerDefinition: ContainerSettings[] | undefined;
+        family: string | undefined;
+      };
     }>,
     res
   ) => {
-    const { containerDefinition, family } = req.body;
+    const { containerDefinition, family } = req.body.data;
 
     if (!containerDefinition) {
       return res.status(400).send('A container definition is required.');

@@ -19,6 +19,10 @@ export interface ContainerSettings {
   portMappings: PortSettings[];
 }
 
+export interface IContainerDefinition {
+  containerDefinition: ContainerSettings[];
+}
+
 /*
 Example request
 {
