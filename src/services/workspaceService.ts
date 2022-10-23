@@ -1,5 +1,5 @@
-const { RunTaskCommand, StopTaskCommand } = require("@aws-sdk/client-ecs");
-const client = require("../utils/ecsClient.js");
+import { RunTaskCommand, StopTaskCommand } from '@aws-sdk/client-ecs';
+import client from '../utils/ecsClient';
 
 /*
   Run a workspace
@@ -11,7 +11,9 @@ const client = require("../utils/ecsClient.js");
     "student_id": "023jfaosdlfj"
   }
 */
-const runWorkspace = async (taskDefinitionARN) => {
+export const runWorkspace = async (taskDefinitionARN: string) => {
+  console.log(process.env.CLUSTER);
+
   const input = {
     cluster: process.env.CLUSTER,
     taskDefinition: taskDefinitionARN,
@@ -23,8 +25,10 @@ const runWorkspace = async (taskDefinitionARN) => {
   try {
     const data = await client.send(command);
     return data;
-  } catch (err) {
-    console.error(err.message);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error(err.message);
+    }
   }
 };
 
@@ -34,10 +38,13 @@ const runWorkspace = async (taskDefinitionARN) => {
  *                        - e.g. "1dc5c17a-422b-4dc4-b493-371970c6c4d6"
  * @param {string} reason - reason for stopping workspace
  */
-const stopWorkspace = async (taskID, reason = "SESSION_ENDED") => {
+export const stopWorkspace = async (
+  taskID: string,
+  reason = 'SESSION_ENDED'
+) => {
   const input = {
     cluster: process.env.CLUSTER,
-    reason: reason,
+    reason,
     task: taskID,
   };
 
@@ -46,12 +53,16 @@ const stopWorkspace = async (taskID, reason = "SESSION_ENDED") => {
   try {
     const data = await client.send(command);
     return data;
-  } catch (err) {
-    console.error(err.message);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.error(err.message);
+    }
   }
 };
 
-module.exports = {
+const workspaceServiceActions = {
   runWorkspace,
   stopWorkspace,
 };
+
+export default workspaceServiceActions;

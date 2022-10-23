@@ -1,2 +1,11 @@
+# Build Files
+dist
+
+# Environmental Variables
 .env
+
+# Mac Specific Files
+.DS_Store
+
+# Node Modules
 node_modules
