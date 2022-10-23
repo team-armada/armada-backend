@@ -77,7 +77,7 @@ app.post(
     }
 
     if (!family) {
-      return res.status(400).send('A container definition is required.');
+      return res.status(400).send('A task family is required.');
     }
 
     const result = await createWorkspaceTemplate(containerDefinition, family);
