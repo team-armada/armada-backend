@@ -3,7 +3,11 @@ import cors from 'cors';
 import { StatusCodes } from 'http-status-codes';
 import * as dotenv from 'dotenv';
 
-import { runWorkspace, stopWorkspace } from './services/workspaceService';
+import {
+  getWorkspaces,
+  runWorkspace,
+  stopWorkspace,
+} from './services/workspaceService';
 import {
   createWorkspaceTemplate,
   deleteWorkspaceTemplate,
@@ -25,7 +29,7 @@ const PORT = process.env.PORT;
 app.use(cors());
 
 /**
- * Get all workspace templates
+ * Get all task definitions
  */
 app.get('/templates', async (req, res) => {
   // Plans for the future
@@ -55,8 +59,6 @@ app.get('/templates', async (req, res) => {
     result,
   });
 });
-
-app.get('/workspaces', () => {});
 
 /**
  * Create a task definition
@@ -88,6 +90,20 @@ app.post(
     });
   }
 );
+
+/**
+ * Get all active workspaces (optionally filtering them.).
+ */
+
+// TODO: Implement filtering via params.
+app.get('/workspaces', async (req, res) => {
+  const result = await getWorkspaces();
+
+  res.status(StatusCodes.OK).json({
+    message: 'Success: Retrieved all active workspaces.',
+    result,
+  });
+});
 
 /**
  * Runs a workspace (an ECS task)

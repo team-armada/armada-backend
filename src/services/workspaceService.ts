@@ -1,5 +1,35 @@
-import { RunTaskCommand, StopTaskCommand } from '@aws-sdk/client-ecs';
+import {
+  RunTaskCommand,
+  StopTaskCommand,
+  ListContainerInstancesCommand,
+} from '@aws-sdk/client-ecs';
 import client from '../utils/ecsClient';
+
+/**
+ * Get All Workspace Templates
+ */
+
+// TODO: Support filter via query string (task:group == family:lowMemory is how you search for a specific task definition).
+// TODO: Make filter optional.
+export const getWorkspaces = async () => {
+  const input = {
+    cluster: process.env.CLUSTER,
+    // filter: 'task:group == family:lowMemory',
+    maxResults: 100,
+    // nextToken: null,
+    status: 'ACTIVE',
+  };
+
+  try {
+    const command = new ListContainerInstancesCommand(input);
+    const response = await client.send(command);
+    return response;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
+  }
+};
 
 /*
   Run a workspace
@@ -61,6 +91,7 @@ export const stopWorkspace = async (
 };
 
 const workspaceServiceActions = {
+  getWorkspaces,
   runWorkspace,
   stopWorkspace,
 };
