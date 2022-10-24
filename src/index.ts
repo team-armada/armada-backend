@@ -97,6 +97,32 @@ app.post(
 );
 
 /**
+ * Delete a workspace template
+ */
+app.delete(
+  '/templates',
+  async (
+    req: TypedRequestBody<{
+      taskDefinitionArn: string | undefined;
+    }>,
+    res
+  ) => {
+    const { taskDefinitionArn } = req.body;
+
+    if (!taskDefinitionArn) {
+      return res.status(400).send('A task definition ARN is required.');
+    }
+
+    const result = await deleteWorkspaceTemplate(taskDefinitionArn);
+
+    res.status(StatusCodes.ACCEPTED).json({
+      message: `Success: Deleted workspace template with ARN ${taskDefinitionArn}`,
+      result,
+    });
+  }
+);
+
+/**
  * Get all active workspaces (optionally filtering them.).
  */
 
@@ -117,17 +143,21 @@ app.post(
   '/workspaces',
   async (
     req: TypedRequestBody<{
-      taskDefinition: string | undefined;
+      data: {
+        taskDefinitionArn: string | undefined;
+      };
     }>,
     res
   ) => {
-    const { taskDefinition } = req.body;
+    const { taskDefinitionArn } = req.body.data;
 
-    if (!taskDefinition) {
-      return res.status(StatusCodes.BAD_REQUEST).send('A task definition is required.');
+    if (!taskDefinitionArn) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A task definition is required.');
     }
 
-    const result = await runWorkspace(taskDefinition);
+    const result = await runWorkspace(taskDefinitionArn);
 
     res.status(StatusCodes.CREATED).json({
       message: 'Success: Running new workspace',
@@ -143,12 +173,14 @@ app.put(
   '/workspaces',
   async (
     req: TypedRequestBody<{
-      taskID: string | undefined;
-      reason: string | undefined;
+      data: {
+        taskID: string | undefined;
+        reason: string | undefined;
+      };
     }>,
     res
   ) => {
-    const { taskID, reason } = req.body;
+    const { taskID, reason } = req.body.data;
 
     if (!taskID) {
       return res.status(StatusCodes.BAD_REQUEST).send('A taskID is required.');
@@ -162,32 +194,6 @@ app.put(
 
     res.status(StatusCodes.OK).json({
       message: 'Success: Stopped a workspace',
-      result,
-    });
-  }
-);
-
-/**
- * Delete a workspace template
- */
-app.delete(
-  '/workspaces',
-  async (
-    req: TypedRequestBody<{
-      taskDefinitionArn: string | undefined;
-    }>,
-    res
-  ) => {
-    const { taskDefinitionArn } = req.body;
-
-    if (!taskDefinitionArn) {
-      return res.status(400).send('A task definition ARN is required.');
-    }
-
-    const result = await deleteWorkspaceTemplate(taskDefinitionArn);
-
-    res.status(StatusCodes.ACCEPTED).json({
-      message: `Success: Deleted workspace template with ARN ${taskDefinitionArn}`,
       result,
     });
   }

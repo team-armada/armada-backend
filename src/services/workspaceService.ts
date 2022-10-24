@@ -1,7 +1,7 @@
 import {
   RunTaskCommand,
   StopTaskCommand,
-  ListContainerInstancesCommand,
+  ListTasksCommand,
 } from '@aws-sdk/client-ecs';
 import client from '../utils/ecsClient';
 
@@ -15,14 +15,19 @@ import client from '../utils/ecsClient';
 export const getWorkspaces = async () => {
   const input = {
     cluster: process.env.CLUSTER,
-    // filter: 'task:group == family:lowMemory',
+    // containerInstance,
+    // desiredStatus
+    // family
+    // launchType
     maxResults: 100,
     // nextToken: null,
+    // serviceName
+    // startedBy
     status: 'ACTIVE',
   };
 
   try {
-    const command = new ListContainerInstancesCommand(input);
+    const command = new ListTasksCommand(input);
     const response = await client.send(command);
     return response;
   } catch (err: unknown) {
@@ -42,12 +47,12 @@ export const getWorkspaces = async () => {
     "student_id": "023jfaosdlfj"
   }
 */
-export const runWorkspace = async (taskDefinitionARN: string) => {
+export const runWorkspace = async (taskDefinitionArn: string) => {
   console.log(process.env.CLUSTER);
 
   const input = {
     cluster: process.env.CLUSTER,
-    taskDefinition: taskDefinitionARN,
+    taskDefinition: taskDefinitionArn,
     count: 1,
   };
 
