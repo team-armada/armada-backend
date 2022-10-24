@@ -1,4 +1,4 @@
-const { ECSClient } = require("@aws-sdk/client-ecs");
+import { ECSClient } from '@aws-sdk/client-ecs';
 
 const config = {
   region: process.env.AWS_REGION,
@@ -8,4 +8,4 @@ const config = {
 
 const client = new ECSClient(config);
 
-module.exports = client;
+export default client;

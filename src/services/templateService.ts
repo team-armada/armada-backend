@@ -1,13 +1,31 @@
-const client = require("../utils/ecsClient.js");
-
-const {
+import {
   RegisterTaskDefinitionCommand,
   ListTaskDefinitionsCommand,
   DeregisterTaskDefinitionCommand,
-} = require("@aws-sdk/client-ecs");
+} from '@aws-sdk/client-ecs';
+
+import client from '../utils/ecsClient';
+
+export interface PortSettings {
+  containerPort: number;
+  hostPost: number;
+  protocol: string;
+}
+
+export interface ContainerSettings {
+  name: string;
+  image: string;
+  memory: number;
+  portMappings: PortSettings[];
+}
+
+export interface IContainerDefinition {
+  containerDefinition: ContainerSettings[];
+}
+
 /*
-Example request 
-{
+Example request
+input: {
 	"containerDefinition": [{
 		"name": "exampleContainer",
 		"image": "jdguillaume/base-code-server-no-auth",
@@ -18,49 +36,56 @@ Example request
 			"protocol": "tcp"
 		}]
 	}],
-	"family": "SetupCodeServer",
+	"family": "SetupCodeServer"
 }
 */
-const createWorkspaceTemplate = async (containerDefinition, family) => {
+export const createWorkspaceTemplate = async (
+  containerDefinition: ContainerSettings[],
+  family: string
+) => {
   const input = {
     containerDefinitions: containerDefinition,
-    family: family,
+    family,
   };
 
   try {
     const command = new RegisterTaskDefinitionCommand(input);
     const response = await client.send(command);
     return response;
-  } catch (err) {
-    console.log(err.message);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
   }
 };
 
 /**
  * Get All Workspace Templates
  */
-const getAllWorkspaceTemplates = async () => {
+export const getAllWorkspaceTemplates = async () => {
   const input = {
     // familyPrefix: null,
     maxResults: 100,
     // nextToken: null,
-    sort: "ASC",
-    status: "ACTIVE",
+    sort: 'ASC',
+    status: 'ACTIVE',
   };
 
   try {
     const command = new ListTaskDefinitionsCommand(input);
     const response = await client.send(command);
     return response;
-  } catch (err) {
-    console.error(err.message);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
   }
 };
 
 /**
  * Deregister a workspace template
  */
-const deleteWorkspaceTemplate = async (taskDefinitionARN) => {
+export const deleteWorkspaceTemplate = async (taskDefinitionARN: string) => {
   const input = {
     taskDefinition: taskDefinitionARN,
   };
@@ -70,13 +95,17 @@ const deleteWorkspaceTemplate = async (taskDefinitionARN) => {
   try {
     const data = await client.send(command);
     return data;
-  } catch (err) {
-    console.error(err.message);
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
   }
 };
 
-module.exports = {
+const templateActions = {
   createWorkspaceTemplate,
   getAllWorkspaceTemplates,
   deleteWorkspaceTemplate,
 };
+
+export default templateActions;
