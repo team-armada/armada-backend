@@ -15,6 +15,7 @@ import {
   deleteWorkspaceTemplate,
   getAllWorkspaceTemplates,
   ContainerSettings,
+  IVolumes,
 } from './services/templateService';
 
 export interface TypedRequestBody<T> extends Express.Request {
@@ -64,7 +65,7 @@ app.get('/templates', async (req, res) => {
 });
 
 /**
- * Create a task definition
+ * Create a task definition (a template )
  */
 app.post(
   '/templates',
@@ -73,11 +74,12 @@ app.post(
       data: {
         containerDefinition: ContainerSettings[] | undefined;
         family: string | undefined;
+        volumes: IVolumes[] | undefined;
       };
     }>,
     res
   ) => {
-    const { containerDefinition, family } = req.body.data;
+    const { containerDefinition, family, volumes } = req.body.data;
 
     if (!containerDefinition) {
       return res.status(400).send('A container definition is required.');
@@ -87,7 +89,15 @@ app.post(
       return res.status(400).send('A task family is required.');
     }
 
-    const result = await createWorkspaceTemplate(containerDefinition, family);
+    if (!volumes) {
+      return res.status(400).send('A task volume is required.');
+    }
+
+    const result = await createWorkspaceTemplate(
+      containerDefinition,
+      family,
+      volumes
+    );
 
     res.status(StatusCodes.CREATED).json({
       message: 'Success: Created a new task definition',

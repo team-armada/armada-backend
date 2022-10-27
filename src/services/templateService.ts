@@ -8,7 +8,7 @@ import client from '../utils/ecsClient';
 
 export interface PortSettings {
   containerPort: number;
-  hostPost: number;
+  hostPort: number;
   protocol: string;
 }
 
@@ -17,11 +17,35 @@ export interface ContainerSettings {
   image: string;
   memory: number;
   portMappings: PortSettings[];
+  mountPoints: IMountSettings[];
+}
+
+export interface IMountSettings {
+  containerPath: string;
+  sourceVolume: string;
 }
 
 export interface IContainerDefinition {
   containerDefinition: ContainerSettings[];
+  family?: string;
+  volumes?: IVolumes[];
 }
+
+export interface IVolumes {
+  efsVolumeConfiguration: {
+    fileSystemId: string;
+    rootDirectory: string;
+  };
+  name: string;
+}
+
+// {
+//       efsVolumeConfiguration: {
+//         fileSystemId: `${process.env.FILE_SYSTEM}`,
+//         rootDirectory: `/${cohort}-${course}-${student}/coder`,
+//       },
+//       name: `coder`,
+//     },
 
 /*
 Example request
@@ -41,11 +65,13 @@ input: {
 */
 export const createWorkspaceTemplate = async (
   containerDefinition: ContainerSettings[],
-  family: string
+  family: string,
+  volumes: IVolumes[]
 ) => {
   const input = {
     containerDefinitions: containerDefinition,
     family,
+    volumes,
   };
 
   try {

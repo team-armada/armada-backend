@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/team-armada/armada-backend#readme",
   "dependencies": {
+    "@aws-sdk/client-cloudformation": "^3.197.0",
     "@aws-sdk/client-ecs": "^3.192.0",
     "aws-sdk": "^2.1236.0",
     "cors": "^2.8.5",
