@@ -13,7 +13,7 @@ const config = {
 
 const client = new CloudFormationClient(config);
 
-async function getStackResources() {
+export async function getStackResources() {
   const command = new DescribeStackResourcesCommand({
     StackName: 'ArmadaInfrastructureStack',
   });
@@ -22,6 +22,4 @@ async function getStackResources() {
   console.log(response);
 }
 
-getStackResources();
-
-// export default client;
+export default client;

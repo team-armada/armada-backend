@@ -1,10 +1,9 @@
-import * as dotenv from 'dotenv';
-
 import {
   createWorkspaceTemplate,
   IContainerDefinition,
 } from './../services/templateService';
-dotenv.config();
+
+import { createEFSFolders } from './lambdaClient';
 
 interface IStudent {
   username: string;
@@ -83,6 +82,7 @@ export function createStudentTaskDefinition(
   if (!process.env.FILE_SYSTEM) {
     throw new Error('No file system ID was provided.');
   }
+
   baseTask.family = `${cohort}-${course}-${student}`;
   baseTask.volumes = [
     {
@@ -95,6 +95,9 @@ export function createStudentTaskDefinition(
   ];
 
   sendRequest(baseTask);
+
+  // TODO: Update to work with multiple volumes via extracting them from container definitions.
+  createEFSFolders(`/${cohort}-${course}-${student}/coder`);
 
   return baseTask.family;
 }
@@ -118,8 +121,12 @@ async function sendRequest(baseTask: IContainerDefinition): Promise<void> {
 console.log(
   createStudentTaskDefinition(
     'Natalie',
-    '2022',
+    '2025',
     'ArmadaSchool',
     coderServerOnly
   )
 );
+
+// Call a lambda function that creates a top level folder and its sub folders (string, array of source volume)
+// Create folder (cohort-course-student)
+// Create subfolders (i.e., coder, postgres)

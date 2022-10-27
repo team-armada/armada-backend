@@ -1,3 +1,5 @@
+// This file will create services for our ECS Cluster.
+
 // const input = {
 //   data: {
 //     serviceName: `${cohort}-${course}-${student}`,
