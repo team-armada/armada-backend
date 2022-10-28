@@ -3,7 +3,8 @@
 import {
   CreateServiceCommand,
   ListServicesCommand,
-  DeleteServiceCommand
+  DeleteServiceCommand,
+  UpdateServiceCommand
 } from '@aws-sdk/client-ecs';
 import { ListEventSourceMappingsCommand } from '@aws-sdk/client-lambda';
 
@@ -90,4 +91,55 @@ export const deleteStudentService = async (
       console.log(err.message);
     }
   }
-}
+};
+
+
+// Update service; can be used when student wants to access their workspace (run a task)
+export const startStudentService = async (
+  service: string,
+) => {
+  const input = {
+    cluster: process.env.CLUSTER,
+    service,
+    desiredCount: 1,
+    deploymentConfiguration: {
+      "maximumPercent": 100,
+      "minimumHealthyPercent": 0
+  },
+  };
+
+  try {
+    const command = new UpdateServiceCommand(input);
+    const response = await client.send(command);
+    return response;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
+  }
+};
+
+// Update service; can be used when student exits their workspace (stops the task)
+export const stopStudentService = async (
+  service: string,
+) => {
+  const input = {
+    cluster: process.env.CLUSTER,
+    service,
+    desiredCount: 0,
+    deploymentConfiguration: {
+      "maximumPercent": 100,
+      "minimumHealthyPercent": 0
+  },
+  };
+
+  try {
+    const command = new UpdateServiceCommand(input);
+    const response = await client.send(command);
+    return response;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
+  }
+};

@@ -7,7 +7,7 @@ import morganBody from 'morgan-body';
 import {
   getWorkspaces,
   runWorkspace,
-  stopWorkspace,
+  // stopWorkspace,
 } from './services/workspaceService';
 
 import {
@@ -21,7 +21,9 @@ import {
 import {
   createStudentService,
   deleteStudentService,
-  getAllStudentServices
+  getAllStudentServices,
+  startStudentService,
+  stopStudentService
 } from './services/studentService';
 
 import { createStudentTaskDefinition, coderServerOnly } from './utils/createTaskDefinitions';
@@ -270,35 +272,89 @@ app.post(
 /**
  * Stop a workspace
  */
+// app.put(
+//   '/workspaces',
+//   async (
+//     req: TypedRequestBody<{
+//       data: {
+//         taskID: string | undefined;
+//         reason: string | undefined;
+//       };
+//     }>,
+//     res
+//   ) => {
+//     const { taskID, reason } = req.body.data;
+
+//     if (!taskID) {
+//       return res.status(StatusCodes.BAD_REQUEST).send('A taskID is required.');
+//     }
+
+//     if (!reason) {
+//       return res.status(StatusCodes.BAD_REQUEST).send('A reason is required.');
+//     }
+
+//     const result = await stopWorkspace(taskID, reason);
+
+//     res.status(StatusCodes.OK).json({
+//       message: 'Success: Stopped a workspace',
+//       result,
+//     });
+//   }
+// );
+
+/**
+ * Update a student service to run the workspace
+ */
 app.put(
-  '/workspaces',
+  '/services',
   async (
     req: TypedRequestBody<{
-      data: {
-        taskID: string | undefined;
-        reason: string | undefined;
-      };
+      service: string| undefined;
     }>,
     res
   ) => {
-    const { taskID, reason } = req.body.data;
+    const { service } = req.body;
 
-    if (!taskID) {
-      return res.status(StatusCodes.BAD_REQUEST).send('A taskID is required.');
+    if (!service) {
+      return res.status(StatusCodes.BAD_REQUEST).send('A service name is required.');
     }
 
-    if (!reason) {
-      return res.status(StatusCodes.BAD_REQUEST).send('A reason is required.');
-    }
-
-    const result = await stopWorkspace(taskID, reason);
+    const result = await startStudentService(service);
 
     res.status(StatusCodes.OK).json({
-      message: 'Success: Stopped a workspace',
+      message: 'Success: Updated a service; started the student workspace',
       result,
     });
   }
 );
+
+/**
+ * Update a student service to stop running a task/workspace
+ */
+ app.put(
+  '/workspaces',
+  async (
+    req: TypedRequestBody<{
+      service: string| undefined;
+    }>,
+    res
+  ) => {
+    const { service } = req.body;
+
+    if (!service) {
+      return res.status(StatusCodes.BAD_REQUEST).send('A service name is required.');
+    }
+
+    const result = await stopStudentService(service);
+
+    res.status(StatusCodes.OK).json({
+      message: 'Success: Updated a service; stopped the student workspace',
+      result,
+    });
+  }
+);
+
+
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
