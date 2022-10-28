@@ -19,7 +19,7 @@ interface IStudent {
 // ecsClient retrieve the baseTaskDefinition object from ECS
 // Eventually pull out mountPoints.sourcceVolume for volumes in taskDefinition
 
-const coderServerOnly: IContainerDefinition = {
+export const coderServerOnly: IContainerDefinition = {
   containerDefinition: [
     {
       name: 'code-server',
@@ -118,14 +118,14 @@ async function sendRequest(baseTask: IContainerDefinition): Promise<void> {
   );
 }
 
-console.log(
-  createStudentTaskDefinition(
-    'Natalie',
-    '2025',
-    'ArmadaSchool',
-    coderServerOnly
-  )
-);
+// console.log(
+//   createStudentTaskDefinition(
+//     'Natalie',
+//     '2028',
+//     'ArmadaSchool',
+//     coderServerOnly
+//   )
+// );
 
 // Call a lambda function that creates a top level folder and its sub folders (string, array of source volume)
 // Create folder (cohort-course-student)

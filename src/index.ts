@@ -18,6 +18,12 @@ import {
   IVolumes,
 } from './services/templateService';
 
+import {
+  createStudentService
+} from './services/studentService';
+
+import { createStudentTaskDefinition, coderServerOnly } from './utils/createTaskDefinitions';
+
 export interface TypedRequestBody<T> extends Express.Request {
   body: T;
 }
@@ -105,6 +111,52 @@ app.post(
     });
   }
 );
+
+/**
+ * Creates a student service based on student name, cohort, course, and version
+ */
+app.post(
+  '/services', 
+  async (
+    req: TypedRequestBody<{
+      data: {
+        studentName: string | undefined,
+        cohort: string | undefined,
+        course: string | undefined,
+        version: number | undefined
+      }
+    }>,
+    res
+  ) => {
+    const { studentName, cohort, course, version } = req.body.data;
+
+    if (!studentName) {
+      return res.status(400).send('A student name is required.');
+    };
+
+    if (!cohort) {
+      return res.status(400).send('A cohort is required.');
+    };
+
+    if (!course) {
+      return res.status(400).send('A course name is required.');
+    };
+
+    if (!version) {
+      return res.status(400).send('A version number is required')
+    }
+
+    const serviceName = createStudentTaskDefinition(studentName, cohort, course, coderServerOnly)
+
+    const result = await createStudentService(serviceName, `${serviceName}:${version}`);
+
+    res.status(StatusCodes.CREATED).json({
+      message: 'Success: Created a new student service',
+      result,
+    });
+
+  }
+)
 
 /**
  * Delete a workspace template
