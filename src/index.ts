@@ -19,7 +19,9 @@ import {
 } from './services/templateService';
 
 import {
-  createStudentService
+  createStudentService,
+  deleteStudentService,
+  getAllStudentServices
 } from './services/studentService';
 
 import { createStudentTaskDefinition, coderServerOnly } from './utils/createTaskDefinitions';
@@ -69,6 +71,18 @@ app.get('/templates', async (req, res) => {
     result,
   });
 });
+
+/**
+ * Get all student services
+ */
+app.get('/services', async (req, res) => {
+  const result = await getAllStudentServices();
+
+  res.status(StatusCodes.OK).json({
+    message: 'Success: Retrieved all student services.',
+    result,
+  })
+})
 
 /**
  * Create a task definition (a template )
@@ -182,6 +196,31 @@ app.delete(
       result,
     });
   }
+);
+
+/**
+ * Delete a student service
+ */
+app.delete(
+  '/services', 
+  async (req: TypedRequestBody<{
+    service: string | undefined;
+  }>,
+  res
+) => {
+  const { service } = req.body;
+
+  if (!service) {
+    return res.status(400).send('A service name is required.');
+  }
+
+  const result = await deleteStudentService(service);
+
+  res.status(StatusCodes.ACCEPTED).json({
+    message: `Success: Deleted student service with name ${service}`,
+    result,
+  });
+}
 );
 
 /**

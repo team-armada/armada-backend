@@ -1,11 +1,15 @@
 // This file will create services for our ECS Cluster.
 
 import {
-  CreateServiceCommand
+  CreateServiceCommand,
+  ListServicesCommand,
+  DeleteServiceCommand
 } from '@aws-sdk/client-ecs';
+import { ListEventSourceMappingsCommand } from '@aws-sdk/client-lambda';
 
 import client from '../utils/ecsClient';
 
+//This creates a service for a student with zero running tasks
 // const input = {
 //   data: {
 //     cluster: process.env.CLUSTER,
@@ -18,8 +22,6 @@ import client from '../utils/ecsClient';
 //     },
 //   },
 // };
-
-//This creates a service for a student with zero running tasks
 
 
 export const createStudentService = async (
@@ -47,3 +49,45 @@ export const createStudentService = async (
     }
   }
 };
+
+// Retrieves all student services
+
+export const getAllStudentServices = async () => {
+  const input = {
+    cluster: process.env.CLUSTER,
+    maxResults: 100,
+    sort: 'ASC',
+    status: 'ACTIVE',
+  };
+
+  try {
+    const command = new ListServicesCommand(input);
+    const response = await client.send(command);
+    return response;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
+  }
+}
+
+//Deletes a service
+
+export const deleteStudentService = async (
+  service: string
+) => {
+  const input = {
+    cluster: process.env.CLUSTER,
+    service
+  };
+
+  try {
+    const command = new DeleteServiceCommand(input);
+    const response = await client.send(command);
+    return response;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
+  }
+}
