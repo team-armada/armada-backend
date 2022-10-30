@@ -4,9 +4,8 @@ import {
   CreateServiceCommand,
   ListServicesCommand,
   DeleteServiceCommand,
-  UpdateServiceCommand
+  UpdateServiceCommand,
 } from '@aws-sdk/client-ecs';
-import { ListEventSourceMappingsCommand } from '@aws-sdk/client-lambda';
 
 import client from '../utils/ecsClient';
 
@@ -24,7 +23,6 @@ import client from '../utils/ecsClient';
 //   },
 // };
 
-
 export const createStudentService = async (
   serviceName: string,
   taskDefinition: string
@@ -35,9 +33,9 @@ export const createStudentService = async (
     taskDefinition,
     desiredCount: 0,
     deploymentConfiguration: {
-      "maximumPercent": 100,
-      "minimumHealthyPercent": 0
-  },
+      maximumPercent: 100,
+      minimumHealthyPercent: 0,
+    },
   };
 
   try {
@@ -70,16 +68,14 @@ export const getAllStudentServices = async () => {
       console.log(err.message);
     }
   }
-}
+};
 
 //Deletes a service
 
-export const deleteStudentService = async (
-  service: string
-) => {
+export const deleteStudentService = async (service: string) => {
   const input = {
     cluster: process.env.CLUSTER,
-    service
+    service,
   };
 
   try {
@@ -93,19 +89,16 @@ export const deleteStudentService = async (
   }
 };
 
-
 // Update service; can be used when student wants to access their workspace (run a task)
-export const startStudentService = async (
-  service: string,
-) => {
+export const startStudentService = async (service: string) => {
   const input = {
     cluster: process.env.CLUSTER,
     service,
     desiredCount: 1,
     deploymentConfiguration: {
-      "maximumPercent": 100,
-      "minimumHealthyPercent": 0
-  },
+      maximumPercent: 100,
+      minimumHealthyPercent: 0,
+    },
   };
 
   try {
@@ -120,17 +113,15 @@ export const startStudentService = async (
 };
 
 // Update service; can be used when student exits their workspace (stops the task)
-export const stopStudentService = async (
-  service: string,
-) => {
+export const stopStudentService = async (service: string) => {
   const input = {
     cluster: process.env.CLUSTER,
     service,
     desiredCount: 0,
     deploymentConfiguration: {
-      "maximumPercent": 100,
-      "minimumHealthyPercent": 0
-  },
+      maximumPercent: 100,
+      minimumHealthyPercent: 0,
+    },
   };
 
   try {

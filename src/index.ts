@@ -23,10 +23,13 @@ import {
   deleteStudentService,
   getAllStudentServices,
   startStudentService,
-  stopStudentService
+  stopStudentService,
 } from './services/studentService';
 
-import { createStudentTaskDefinition, coderServerOnly } from './utils/createTaskDefinitions';
+import {
+  createStudentTaskDefinition,
+  coderServerOnly,
+} from './utils/createTaskDefinitions';
 
 export interface TypedRequestBody<T> extends Express.Request {
   body: T;
@@ -46,26 +49,6 @@ app.use(cors());
  * Get all task definitions
  */
 app.get('/templates', async (req, res) => {
-  // Plans for the future
-  /*
-    [
-      {
-        templateID: "asldkfjawoiejfa",
-        title: family,
-        workspacesCount: 20
-      },
-      {
-        templateID: "asldkfjawoiejfa",
-        title: family,
-        workspacesCount: 20
-      },
-      {
-        templateID: "asldkfjawoiejfa",
-        title: family,
-        workspacesCount: 20
-      },
-    ]
-  */
   const result = await getAllWorkspaceTemplates();
 
   res.status(StatusCodes.OK).json({
@@ -83,8 +66,8 @@ app.get('/services', async (req, res) => {
   res.status(StatusCodes.OK).json({
     message: 'Success: Retrieved all student services.',
     result,
-  })
-})
+  });
+});
 
 /**
  * Create a task definition (a template )
@@ -132,15 +115,15 @@ app.post(
  * Creates a student service based on student name, cohort, course, and version
  */
 app.post(
-  '/services', 
+  '/services',
   async (
     req: TypedRequestBody<{
       data: {
-        studentName: string | undefined,
-        cohort: string | undefined,
-        course: string | undefined,
-        version: number | undefined
-      }
+        studentName: string | undefined;
+        cohort: string | undefined;
+        course: string | undefined;
+        version: number | undefined;
+      };
     }>,
     res
   ) => {
@@ -148,31 +131,38 @@ app.post(
 
     if (!studentName) {
       return res.status(400).send('A student name is required.');
-    };
+    }
 
     if (!cohort) {
       return res.status(400).send('A cohort is required.');
-    };
+    }
 
     if (!course) {
       return res.status(400).send('A course name is required.');
-    };
-
-    if (!version) {
-      return res.status(400).send('A version number is required')
     }
 
-    const serviceName = createStudentTaskDefinition(studentName, cohort, course, coderServerOnly)
+    if (!version) {
+      return res.status(400).send('A version number is required');
+    }
 
-    const result = await createStudentService(serviceName, `${serviceName}:${version}`);
+    const serviceName = await createStudentTaskDefinition(
+      studentName,
+      cohort,
+      course,
+      coderServerOnly
+    );
+
+    const result = await createStudentService(
+      serviceName,
+      `${serviceName}:${version}`
+    );
 
     res.status(StatusCodes.CREATED).json({
       message: 'Success: Created a new student service',
       result,
     });
-
   }
-)
+);
 
 /**
  * Delete a workspace template
@@ -204,25 +194,26 @@ app.delete(
  * Delete a student service
  */
 app.delete(
-  '/services', 
-  async (req: TypedRequestBody<{
-    service: string | undefined;
-  }>,
-  res
-) => {
-  const { service } = req.body;
+  '/services',
+  async (
+    req: TypedRequestBody<{
+      service: string | undefined;
+    }>,
+    res
+  ) => {
+    const { service } = req.body;
 
-  if (!service) {
-    return res.status(400).send('A service name is required.');
+    if (!service) {
+      return res.status(400).send('A service name is required.');
+    }
+
+    const result = await deleteStudentService(service);
+
+    res.status(StatusCodes.ACCEPTED).json({
+      message: `Success: Deleted student service with name ${service}`,
+      result,
+    });
   }
-
-  const result = await deleteStudentService(service);
-
-  res.status(StatusCodes.ACCEPTED).json({
-    message: `Success: Deleted student service with name ${service}`,
-    result,
-  });
-}
 );
 
 /**
@@ -309,14 +300,16 @@ app.put(
   '/services',
   async (
     req: TypedRequestBody<{
-      service: string| undefined;
+      service: string | undefined;
     }>,
     res
   ) => {
     const { service } = req.body;
 
     if (!service) {
-      return res.status(StatusCodes.BAD_REQUEST).send('A service name is required.');
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A service name is required.');
     }
 
     const result = await startStudentService(service);
@@ -331,18 +324,20 @@ app.put(
 /**
  * Update a student service to stop running a task/workspace
  */
- app.put(
+app.put(
   '/workspaces',
   async (
     req: TypedRequestBody<{
-      service: string| undefined;
+      service: string | undefined;
     }>,
     res
   ) => {
     const { service } = req.body;
 
     if (!service) {
-      return res.status(StatusCodes.BAD_REQUEST).send('A service name is required.');
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A service name is required.');
     }
 
     const result = await stopStudentService(service);
@@ -353,8 +348,6 @@ app.put(
     });
   }
 );
-
-
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);

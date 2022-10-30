@@ -1,6 +1,10 @@
+import * as dotenv from 'dotenv';
+import clone from 'just-clone';
+
 import {
   createWorkspaceTemplate,
   IContainerDefinition,
+  IVolumes,
 } from './../services/templateService';
 
 import { createEFSFolders } from './lambdaClient';
@@ -9,22 +13,16 @@ interface IStudent {
   username: string;
 }
 
-// Function Outline
-// - Base template would start with "template-cohort-course-*"
-//    - Display as cohort-course
-// - Base-Template that has just code-server and then we'll add or reassign the values that need interpolated
+dotenv.config();
 
-// Additional Thoughts
-// Retrieve task definition from ARN.
-// ecsClient retrieve the baseTaskDefinition object from ECS
-// Eventually pull out mountPoints.sourcceVolume for volumes in taskDefinition
-
+// TODO: Test Dynamic Port Mapping via setting hostPort to 0
+// Sample Base Template
 export const coderServerOnly: IContainerDefinition = {
   containerDefinition: [
     {
       name: 'code-server',
       image: 'jdguillaume/base-code-server-no-auth',
-      memory: 256,
+      memory: 512,
       portMappings: [
         {
           containerPort: 8080,
@@ -42,9 +40,45 @@ export const coderServerOnly: IContainerDefinition = {
   ],
 };
 
+// Function Outline
+// - Base template would start with "template-cohort-course-*"
+//    - Display as cohort-course
+// - Base-Template that has just code-server and then we'll add or reassign the values that need interpolated
+
+// Extracts the names of the sourceVolume folders that need to be created based on the template provided.
+function extractFolderNames(
+  containerDefinitions: IContainerDefinition
+): string[] {
+  return containerDefinitions.containerDefinition.map(definition => {
+    return definition.mountPoints[0].sourceVolume;
+  });
+}
+
+// Creates volume entries based on the taskName and folders passed in.
+function createVolumeEntries(taskName: string, folders: string[]): IVolumes[] {
+  const volumes: IVolumes[] = [];
+  const fileSystemId = process.env.FILE_SYSTEM;
+
+  if (!fileSystemId) {
+    throw new Error('No file system ID was provided.');
+  }
+
+  folders.forEach(folder => {
+    volumes.push({
+      efsVolumeConfiguration: {
+        fileSystemId,
+        rootDirectory: `/${taskName}/${folder}`,
+      },
+      name: `${folder}`,
+    });
+  });
+
+  return volumes;
+}
+
 /*
-Input: Array of student names, cohort, class, baseTaskDefintion
-Output: Array of task definition objects for each student
+Input: Array of student names, cohort, class, and a baseTaskDefinition
+Output: Array of task definition names for each student (formatted cohort-course-student)
 */
 
 export function createBatchDefinitions(
@@ -52,52 +86,47 @@ export function createBatchDefinitions(
   cohort: string,
   course: string,
   baseTaskDefinition: IContainerDefinition
-): string[] {
-  // Return an Array of ARNs
-  return studentArray.map(student => {
-    return createStudentTaskDefinition(
-      student.username,
-      cohort,
-      course,
-      baseTaskDefinition
+): Promise<string[]> {
+  const resultArray = [];
+
+  for (let count = 0; count < studentArray.length; count++) {
+    resultArray.push(
+      createStudentTaskDefinition(
+        studentArray[count].username,
+        cohort,
+        course,
+        baseTaskDefinition
+      )
     );
-  });
+  }
+
+  return Promise.all(resultArray);
 }
 
 /*
-Input: one student, cohort, class
-Output: One task definition
+Input: One Student, One Cohort, One Course, and a baseTaskDefinition
+Output: A student-specific task-definition.
 */
 
-export function createStudentTaskDefinition(
+export async function createStudentTaskDefinition(
   student: string,
   cohort: string,
   course: string,
   baseTaskDefinition: IContainerDefinition
-): string {
-  const baseTask: IContainerDefinition = JSON.parse(
-    JSON.stringify(baseTaskDefinition)
-  );
+): Promise<string> {
+  const baseTask = clone(baseTaskDefinition);
+  const taskName = `${cohort}-${course}-${student}`;
+  const folders = extractFolderNames(baseTask);
 
-  if (!process.env.FILE_SYSTEM) {
-    throw new Error('No file system ID was provided.');
-  }
+  baseTask.family = taskName;
 
-  baseTask.family = `${cohort}-${course}-${student}`;
-  baseTask.volumes = [
-    {
-      efsVolumeConfiguration: {
-        fileSystemId: process.env.FILE_SYSTEM,
-        rootDirectory: `/${cohort}-${course}-${student}/coder`,
-      },
-      name: `coder`,
-    },
-  ];
+  baseTask.volumes = createVolumeEntries(taskName, folders);
 
-  sendRequest(baseTask);
+  await sendRequest(baseTask);
 
-  // TODO: Update to work with multiple volumes via extracting them from container definitions.
-  createEFSFolders(`/${cohort}-${course}-${student}/coder`);
+  folders.forEach(async folder => {
+    await createEFSFolders(`/${taskName}/${folder}`);
+  });
 
   return baseTask.family;
 }
@@ -117,16 +146,3 @@ async function sendRequest(baseTask: IContainerDefinition): Promise<void> {
     baseTask.volumes
   );
 }
-
-// console.log(
-//   createStudentTaskDefinition(
-//     'Natalie',
-//     '2028',
-//     'ArmadaSchool',
-//     coderServerOnly
-//   )
-// );
-
-// Call a lambda function that creates a top level folder and its sub folders (string, array of source volume)
-// Create folder (cohort-course-student)
-// Create subfolders (i.e., coder, postgres)
