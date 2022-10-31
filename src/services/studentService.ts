@@ -7,7 +7,7 @@ import {
   UpdateServiceCommand,
 } from '@aws-sdk/client-ecs';
 
-import client from '../utils/ecsClient';
+import client from '../clients/ecsClient';
 
 //This creates a service for a student with zero running tasks
 // const input = {

@@ -1,19 +1,22 @@
-import * as dotenv from 'dotenv';
 import clone from 'just-clone';
+import { retrieveFileSystemId } from '../clients/efsClient';
 
+import { createEFSFolders } from '../clients/lambdaClient';
 import {
   createWorkspaceTemplate,
   IContainerDefinition,
   IVolumes,
 } from './../services/templateService';
 
-import { createEFSFolders } from './lambdaClient';
-
 interface IStudent {
   username: string;
 }
 
-dotenv.config();
+let fileSystemId: string;
+
+async function setFileSystemId(): Promise<void> {
+  fileSystemId = await retrieveFileSystemId();
+}
 
 // TODO: Test Dynamic Port Mapping via setting hostPort to 0
 // Sample Base Template
@@ -57,7 +60,6 @@ function extractFolderNames(
 // Creates volume entries based on the taskName and folders passed in.
 function createVolumeEntries(taskName: string, folders: string[]): IVolumes[] {
   const volumes: IVolumes[] = [];
-  const fileSystemId = process.env.FILE_SYSTEM;
 
   if (!fileSystemId) {
     throw new Error('No file system ID was provided.');
@@ -120,6 +122,7 @@ export async function createStudentTaskDefinition(
 
   baseTask.family = taskName;
 
+  if (!fileSystemId) await setFileSystemId();
   baseTask.volumes = createVolumeEntries(taskName, folders);
 
   await sendRequest(baseTask);

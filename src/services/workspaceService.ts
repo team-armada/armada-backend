@@ -3,7 +3,7 @@ import {
   StopTaskCommand,
   ListTasksCommand,
 } from '@aws-sdk/client-ecs';
-import client from '../utils/ecsClient';
+import client from '../clients/ecsClient';
 
 /**
  * Get All Workspace Templates

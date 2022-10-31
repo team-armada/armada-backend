@@ -4,7 +4,7 @@ import {
   DeregisterTaskDefinitionCommand,
 } from '@aws-sdk/client-ecs';
 
-import client from '../utils/ecsClient';
+import client from '../clients/ecsClient';
 
 export interface PortSettings {
   containerPort: number;
