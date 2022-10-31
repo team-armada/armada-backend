@@ -39,13 +39,6 @@ export const getWorkspaces = async () => {
 
 /*
   Run a workspace
-
-  example request: 
-  {
-    "count": 1,
-    "taskDefinition": "hello_world",
-    "student_id": "023jfaosdlfj"
-  }
 */
 export const runWorkspace = async (taskDefinitionArn: string) => {
   console.log(process.env.CLUSTER);
