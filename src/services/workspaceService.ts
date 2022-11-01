@@ -12,7 +12,7 @@ import client from '../clients/ecsClient';
 // TODO: Support filter via query string (task:group == family:lowMemory is how you search for a specific task definition).
 
 // TODO: Make filter optional.
-export const getWorkspaces = async () => {
+export const getRunningTask = async (serviceName: string) => {
   const input = {
     cluster: 'ECS-Cluster',
     // containerInstance,
@@ -21,7 +21,7 @@ export const getWorkspaces = async () => {
     // launchType
     maxResults: 100,
     // nextToken: null,
-    // serviceName
+    serviceName,
     // startedBy
     status: 'ACTIVE',
   };
@@ -29,7 +29,18 @@ export const getWorkspaces = async () => {
   try {
     const command = new ListTasksCommand(input);
     const response = await client.send(command);
-    return response;
+
+    if (!response){
+      throw new Error('No response received from AWS.')
+    }
+
+    const runningTasks = response?.taskArns
+
+    if (!runningTasks){
+      throw new Error('The service you provided does not exist.')
+    }
+
+    return runningTasks;
   } catch (err: unknown) {
     if (err instanceof Error) {
       console.log(err.message);
@@ -88,7 +99,7 @@ export const stopWorkspace = async (
 };
 
 const workspaceServiceActions = {
-  getWorkspaces,
+  getRunningTask,
   runWorkspace,
   stopWorkspace,
 };

@@ -24,6 +24,7 @@
     "@aws-sdk/client-cloudformation": "^3.197.0",
     "@aws-sdk/client-ecs": "^3.192.0",
     "@aws-sdk/client-efs": "^3.199.0",
+    "@aws-sdk/client-elastic-load-balancing-v2": "^3.200.0",
     "@aws-sdk/client-lambda": "^3.198.0",
     "aws-sdk": "^2.1236.0",
     "cors": "^2.8.5",

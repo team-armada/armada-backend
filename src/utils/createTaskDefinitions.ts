@@ -12,6 +12,11 @@ interface IStudent {
   username: string;
 }
 
+interface ITaskResult {
+  family: string,
+  revision: number,
+}
+
 let fileSystemId: string;
 
 async function setFileSystemId(): Promise<void> {
@@ -88,7 +93,7 @@ export function createBatchDefinitions(
   cohort: string,
   course: string,
   baseTaskDefinition: IContainerDefinition
-): Promise<string[]> {
+): Promise<ITaskResult[]> {
   const resultArray = [];
 
   for (let count = 0; count < studentArray.length; count++) {
@@ -115,7 +120,7 @@ export async function createStudentTaskDefinition(
   cohort: string,
   course: string,
   baseTaskDefinition: IContainerDefinition
-): Promise<string> {
+): Promise<ITaskResult> {
   const baseTask = clone(baseTaskDefinition);
   const taskName = `${cohort}-${course}-${student}`;
   const folders = extractFolderNames(baseTask);
@@ -125,16 +130,23 @@ export async function createStudentTaskDefinition(
   if (!fileSystemId) await setFileSystemId();
   baseTask.volumes = createVolumeEntries(taskName, folders);
 
-  await sendRequest(baseTask);
+  const task = await sendRequest(baseTask);
 
   folders.forEach(async folder => {
     await createEFSFolders(`/${taskName}/${folder}`);
   });
 
-  return baseTask.family;
+  const revision = task?.taskDefinition?.revision;
+  const family = task?.taskDefinition?.family
+
+  if (revision === undefined || family === undefined){
+    throw new Error('Task Definition Not found.')
+  }
+
+  return {revision, family}
 }
 
-async function sendRequest(baseTask: IContainerDefinition): Promise<void> {
+async function sendRequest(baseTask: IContainerDefinition) {
   if (!baseTask.family) {
     throw new Error('The family task provided is incorrect.');
   }
@@ -143,9 +155,14 @@ async function sendRequest(baseTask: IContainerDefinition): Promise<void> {
     throw new Error('The defined volume is incorrect.');
   }
 
-  await createWorkspaceTemplate(
+  const response = await createWorkspaceTemplate(
     baseTask.containerDefinition,
     baseTask.family,
     baseTask.volumes
   );
+
+  return response
 }
+
+
+// console.log(createStudentTaskDefinition('jdguillaume', '3030', 'Work', coderServerOnly))

@@ -5,9 +5,9 @@ import * as dotenv from 'dotenv';
 import morganBody from 'morgan-body';
 
 import {
-  getWorkspaces,
+  getRunningTask,
   runWorkspace,
-  // stopWorkspace,
+  stopWorkspace,
 } from './services/workspaceService';
 
 import {
@@ -30,6 +30,8 @@ import {
   createStudentTaskDefinition,
   coderServerOnly,
 } from './utils/createTaskDefinitions';
+
+import { baseTemplates, IBaseTemplate } from './utils/baseTemplates';
 
 export interface TypedRequestBody<T> extends Express.Request {
   body: T;
@@ -122,12 +124,12 @@ app.post(
         studentName: string | undefined;
         cohort: string | undefined;
         course: string | undefined;
-        version: number | undefined;
+        template: string | undefined;
       };
     }>,
     res
   ) => {
-    const { studentName, cohort, course, version } = req.body.data;
+    const { studentName, cohort, course, template } = req.body.data;
 
     if (!studentName) {
       return res.status(400).send('A student name is required.');
@@ -141,20 +143,28 @@ app.post(
       return res.status(400).send('A course name is required.');
     }
 
-    if (!version) {
-      return res.status(400).send('A version number is required');
+    if (!template) {
+      return res.status(400).send('A template is required');
     }
+
+    // Get base task definition from template string
+    // Have a separate folder with a javascript object that contains our container definitions
+    const baseTemplate = baseTemplates.filter(baseContainer => baseContainer.name === template)[0];
 
     const serviceName = await createStudentTaskDefinition(
       studentName,
       cohort,
       course,
-      coderServerOnly
+      baseTemplate.definition
     );
 
+    // return an object
+    // - serviceName = family
+    // - revision
+
     const result = await createStudentService(
-      serviceName,
-      `${serviceName}:${version}`
+      serviceName.family,
+      `${serviceName.family}:${serviceName.revision}`,
     );
 
     res.status(StatusCodes.CREATED).json({
@@ -197,15 +207,20 @@ app.delete(
   '/services',
   async (
     req: TypedRequestBody<{
-      service: string | undefined;
+      data: {
+        service: string | undefined;
+      }
+
     }>,
     res
   ) => {
-    const { service } = req.body;
+    const { service } = req.body.data;
 
     if (!service) {
       return res.status(400).send('A service name is required.');
     }
+
+    const stopServiceResult = await stopStudentService(service);
 
     const result = await deleteStudentService(service);
 
@@ -221,14 +236,14 @@ app.delete(
  */
 
 // TODO: Implement filtering via params.
-app.get('/workspaces', async (req, res) => {
-  const result = await getWorkspaces();
+// app.get('/workspaces', async (req, res) => {
+//   const result = await getWorkspaces();
 
-  res.status(StatusCodes.OK).json({
-    message: 'Success: Retrieved all active workspaces.',
-    result,
-  });
-});
+//   res.status(StatusCodes.OK).json({
+//     message: 'Success: Retrieved all active workspaces.',
+//     result,
+//   });
+// });
 
 /**
  * Runs a workspace (an ECS task)
@@ -297,7 +312,7 @@ app.post(
  * Update a student service to run the workspace
  */
 app.put(
-  '/services',
+  '/services/start',
   async (
     req: TypedRequestBody<{
       service: string | undefined;
@@ -325,14 +340,16 @@ app.put(
  * Update a student service to stop running a task/workspace
  */
 app.put(
-  '/workspaces',
+  '/services/stop',
   async (
     req: TypedRequestBody<{
-      service: string | undefined;
+      data: {
+        service: string | undefined;
+      }
     }>,
     res
   ) => {
-    const { service } = req.body;
+    const { service } = req.body.data;
 
     if (!service) {
       return res

@@ -29,6 +29,7 @@ export interface IContainerDefinition {
   containerDefinition: ContainerSettings[];
   family?: string;
   volumes?: IVolumes[];
+  template?: string;
 }
 
 export interface IVolumes {

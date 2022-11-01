@@ -29,7 +29,6 @@ export async function retrieveFileSystemId(): Promise<string> {
     );
   }
 
-  console.log(id);
   return id;
 }
 

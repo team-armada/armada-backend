@@ -8,6 +8,12 @@ import {
 } from '@aws-sdk/client-ecs';
 
 import client from '../clients/ecsClient';
+import {retrieveALBTargetGroup} from '../clients/elbv2Client'
+import { getRunningTask, stopWorkspace } from './workspaceService';
+
+let targetGroupArn: string;
+
+// import { stopWorkspace } from './workspaceService';
 
 //This creates a service for a student with zero running tasks
 // const input = {
@@ -27,8 +33,14 @@ export const createStudentService = async (
   serviceName: string,
   taskDefinition: string
 ) => {
+  if (!targetGroupArn){
+    targetGroupArn = await retrieveALBTargetGroup();
+
+  }
+
   const input = {
     cluster: 'ECS-Cluster',
+    LaunchType: 'EC2',
     serviceName,
     taskDefinition,
     desiredCount: 0,
@@ -36,6 +48,13 @@ export const createStudentService = async (
       maximumPercent: 100,
       minimumHealthyPercent: 0,
     },
+    DeploymentController: 'ECS',
+    SchedulingStrategy: 'REPLICA',
+    loadBalancers: [{
+      containerName: 'code-server',
+      containerPort: 8080,
+      targetGroupArn,
+    }]
   };
 
   try {
@@ -77,6 +96,18 @@ export const deleteStudentService = async (service: string) => {
     cluster: 'ECS-Cluster',
     service,
   };
+
+  // if the service has any running tasks, throw an error.
+  // Retrieve running tasks for a service
+  const tasks = await getRunningTask(service);
+
+  if (!tasks){
+    throw new Error('Response not received from AWS.')
+  }
+
+  if (tasks.length > 0){
+    throw new Error(`Can't delete student service. All service tasks must be in a "stopped" state.`)
+  }
 
   try {
     const command = new DeleteServiceCommand(input);
@@ -123,6 +154,9 @@ export const stopStudentService = async (service: string) => {
       minimumHealthyPercent: 0,
     },
   };
+
+  // We need to stop any running tasks within that service.
+  const stopWorkspaceResult= await stopWorkspace(service);
 
   try {
     const command = new UpdateServiceCommand(input);
