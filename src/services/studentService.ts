@@ -12,7 +12,7 @@ import client from '../clients/ecsClient';
 //This creates a service for a student with zero running tasks
 // const input = {
 //   data: {
-//     cluster: process.env.CLUSTER,
+//     cluster: 'ECS-Cluster',
 //     serviceName: `${cohort}-${course}-${student}`,
 //     taskDefinition: `${cohort}-${course}-${student}`,
 //     desiredCount: 0,
@@ -28,7 +28,7 @@ export const createStudentService = async (
   taskDefinition: string
 ) => {
   const input = {
-    cluster: process.env.CLUSTER,
+    cluster: 'ECS-Cluster',
     serviceName,
     taskDefinition,
     desiredCount: 0,
@@ -53,7 +53,7 @@ export const createStudentService = async (
 
 export const getAllStudentServices = async () => {
   const input = {
-    cluster: process.env.CLUSTER,
+    cluster: 'ECS-Cluster',
     maxResults: 100,
     sort: 'ASC',
     status: 'ACTIVE',
@@ -74,7 +74,7 @@ export const getAllStudentServices = async () => {
 
 export const deleteStudentService = async (service: string) => {
   const input = {
-    cluster: process.env.CLUSTER,
+    cluster: 'ECS-Cluster',
     service,
   };
 
@@ -92,7 +92,7 @@ export const deleteStudentService = async (service: string) => {
 // Update service; can be used when student wants to access their workspace (run a task)
 export const startStudentService = async (service: string) => {
   const input = {
-    cluster: process.env.CLUSTER,
+    cluster: 'ECS-Cluster',
     service,
     desiredCount: 1,
     deploymentConfiguration: {
@@ -115,7 +115,7 @@ export const startStudentService = async (service: string) => {
 // Update service; can be used when student exits their workspace (stops the task)
 export const stopStudentService = async (service: string) => {
   const input = {
-    cluster: process.env.CLUSTER,
+    cluster: 'ECS-Cluster',
     service,
     desiredCount: 0,
     deploymentConfiguration: {

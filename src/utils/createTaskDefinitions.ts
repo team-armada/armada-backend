@@ -29,7 +29,7 @@ export const coderServerOnly: IContainerDefinition = {
       portMappings: [
         {
           containerPort: 8080,
-          hostPort: 8080,
+          hostPort: 0,
           protocol: 'tcp',
         },
       ],

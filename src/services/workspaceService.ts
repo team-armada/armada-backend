@@ -14,7 +14,7 @@ import client from '../clients/ecsClient';
 // TODO: Make filter optional.
 export const getWorkspaces = async () => {
   const input = {
-    cluster: process.env.CLUSTER,
+    cluster: 'ECS-Cluster',
     // containerInstance,
     // desiredStatus
     // family
@@ -41,10 +41,8 @@ export const getWorkspaces = async () => {
   Run a workspace
 */
 export const runWorkspace = async (taskDefinitionArn: string) => {
-  console.log(process.env.CLUSTER);
-
   const input = {
-    cluster: process.env.CLUSTER,
+    cluster: 'ECS-Cluster',
     taskDefinition: taskDefinitionArn,
     count: 1,
   };
@@ -72,7 +70,7 @@ export const stopWorkspace = async (
   reason = 'SESSION_ENDED'
 ) => {
   const input = {
-    cluster: process.env.CLUSTER,
+    cluster: 'ECS-Cluster',
     reason,
     task: taskID,
   };
