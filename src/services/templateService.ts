@@ -12,7 +12,7 @@ export interface PortSettings {
   protocol: string;
 }
 
-export interface ContainerSettings {
+export interface IContainerSettings {
   name: string;
   image: string;
   memory: number;
@@ -26,7 +26,7 @@ export interface IMountSettings {
 }
 
 export interface IContainerDefinition {
-  containerDefinition: ContainerSettings[];
+  containerDefinition: IContainerSettings[];
   family?: string;
   volumes?: IVolumes[];
   template?: string;
@@ -65,7 +65,7 @@ input: {
 }
 */
 export const createWorkspaceTemplate = async (
-  containerDefinition: ContainerSettings[],
+  containerDefinition: IContainerSettings[],
   family: string,
   volumes: IVolumes[]
 ) => {

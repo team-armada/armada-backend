@@ -14,7 +14,7 @@ import {
   createWorkspaceTemplate,
   deleteWorkspaceTemplate,
   getAllWorkspaceTemplates,
-  ContainerSettings,
+  IContainerSettings,
   IVolumes,
 } from './services/templateService';
 
@@ -79,7 +79,7 @@ app.post(
   async (
     req: TypedRequestBody<{
       data: {
-        containerDefinition: ContainerSettings[] | undefined;
+        containerDefinition: IContainerSettings[] | undefined;
         family: string | undefined;
         volumes: IVolumes[] | undefined;
       };
@@ -112,6 +112,13 @@ app.post(
     });
   }
 );
+
+app.get('/templates/base', (req, res) => {
+  res.status(StatusCodes.OK).json({
+    message: 'Success: Retrived base templates',
+    baseTemplates,
+  });
+})
 
 /**
  * Creates a student service based on student name, cohort, course, and version
