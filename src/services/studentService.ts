@@ -5,6 +5,7 @@ import {
   ListServicesCommand,
   DeleteServiceCommand,
   UpdateServiceCommand,
+  DescribeServicesCommand
 } from '@aws-sdk/client-ecs';
 
 import client from '../clients/ecsClient';
@@ -28,6 +29,26 @@ let targetGroupArn: string;
 //     },
 //   },
 // };
+
+export const describeStudentService = async (
+  serviceName: string
+) => {
+
+  const input = {
+    cluster: 'ECS-Cluster',
+    services: [serviceName]
+  }
+
+  try {
+    const command = new DescribeServicesCommand(input);
+    const response = await client.send(command);
+    return response;
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      console.log(err.message);
+    }
+  }
+}
 
 export const createStudentService = async (
   serviceName: string,

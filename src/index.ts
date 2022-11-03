@@ -21,6 +21,7 @@ import {
 import {
   createStudentService,
   deleteStudentService,
+  describeStudentService,
   getAllStudentServices,
   startStudentService,
   stopStudentService,
@@ -71,6 +72,20 @@ app.get('/services', async (req, res) => {
     result,
   });
 });
+
+/**
+ * Get all student services
+ */
+app.get('/service/:service', async (req, res) => {
+  const {service} = req.params
+  const result = await describeStudentService(service);
+
+  res.status(StatusCodes.OK).json({
+    message: 'Success: Retrieved all student services.',
+    result,
+  });
+});
+
 
 /**
  * Create a task definition (a template )
