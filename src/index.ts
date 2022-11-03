@@ -219,14 +219,12 @@ app.delete(
   '/services',
   async (
     req: TypedRequestBody<{
-      data: {
         service: string | undefined;
-      }
-
     }>,
     res
   ) => {
-    const { service } = req.body.data;
+    console.log(req.body)
+    const { service } = req.body;
 
     if (!service) {
       return res.status(400).send('A service name is required.');
@@ -327,11 +325,13 @@ app.put(
   '/services/start',
   async (
     req: TypedRequestBody<{
-      service: string | undefined;
+      data: {
+        service: string | undefined;
+      }
     }>,
     res
   ) => {
-    const { service } = req.body;
+    const { service } = req.body.data;
 
     if (!service) {
       return res
