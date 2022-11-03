@@ -8,10 +8,6 @@ import {
   IVolumes,
 } from './../services/templateService';
 
-interface IStudent {
-  username: string;
-}
-
 interface ITaskResult {
   family: string,
   revision: number,
@@ -89,7 +85,7 @@ Output: Array of task definition names for each student (formatted cohort-course
 */
 
 export function createBatchDefinitions(
-  studentArray: IStudent[],
+  studentArray: string[],
   cohort: string,
   course: string,
   baseTaskDefinition: IContainerDefinition
@@ -99,7 +95,7 @@ export function createBatchDefinitions(
   for (let count = 0; count < studentArray.length; count++) {
     resultArray.push(
       createStudentTaskDefinition(
-        studentArray[count].username,
+        studentArray[count],
         cohort,
         course,
         baseTaskDefinition

@@ -27,6 +27,7 @@ import {
 } from './services/studentService';
 
 import {
+  createBatchDefinitions,
   createStudentTaskDefinition,
   coderServerOnly,
 } from './utils/createTaskDefinitions';
@@ -128,7 +129,7 @@ app.post(
   async (
     req: TypedRequestBody<{
       data: {
-        studentName: string | undefined;
+        studentNames: string[] | undefined;
         cohort: string | undefined;
         course: string | undefined;
         template: string | undefined;
@@ -136,10 +137,10 @@ app.post(
     }>,
     res
   ) => {
-    const { studentName, cohort, course, template } = req.body.data;
+    const { studentNames, cohort, course, template } = req.body.data;
 
-    if (!studentName) {
-      return res.status(400).send('A student name is required.');
+    if (!studentNames) {
+      return res.status(400).send('An array of student names is required.');
     }
 
     if (!cohort) {
@@ -158,8 +159,8 @@ app.post(
     // Have a separate folder with a javascript object that contains our container definitions
     const baseTemplate = baseTemplates.filter(baseContainer => baseContainer.name === template)[0];
 
-    const serviceName = await createStudentTaskDefinition(
-      studentName,
+    const serviceNames = await createBatchDefinitions(
+      studentNames,
       cohort,
       course,
       baseTemplate.definition
@@ -168,12 +169,16 @@ app.post(
     // return an object
     // - serviceName = family
     // - revision
+    
+    const promiseHolder = [];
 
-    const result = await createStudentService(
-      serviceName.family,
-      `${serviceName.family}:${serviceName.revision}`,
-    );
+    for (let count = 0; count < serviceNames.length; count++){
+      const currentStudent = serviceNames[count]
+      promiseHolder.push(createStudentService(currentStudent.family, `${currentStudent.family}:${currentStudent.revision}`))
+    }
 
+    const result = await Promise.all(promiseHolder)
+    
     res.status(StatusCodes.CREATED).json({
       message: 'Success: Created a new student service',
       result,
