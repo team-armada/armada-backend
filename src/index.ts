@@ -34,6 +34,7 @@ import {
 } from './utils/createTaskDefinitions';
 
 import { baseTemplates, IBaseTemplate } from './utils/baseTemplates';
+import { createUser } from './services/userCreationService';
 
 export interface TypedRequestBody<T> extends Express.Request {
   body: T;
@@ -388,6 +389,41 @@ app.put(
 
     res.status(StatusCodes.OK).json({
       message: 'Success: Updated a service; stopped the student workspace',
+      result,
+    });
+  }
+);
+
+// Create Users
+app.post(
+  '/users/create',
+  async (
+    req: TypedRequestBody<{
+      data: {
+        userType: 'admin' | 'student' | undefined;
+        username: string | undefined;
+      }
+    }>,
+    res
+  ) => {
+    const { userType, username } = req.body.data;
+
+    if (!userType) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A valid userType is required.');
+    }
+
+    if (!username) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A valid username is required.');
+    }
+
+    const result = await createUser(userType, username);
+
+    res.status(StatusCodes.OK).json({
+      message: 'Success: Created a user!',
       result,
     });
   }

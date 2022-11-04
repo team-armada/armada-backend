@@ -22,6 +22,7 @@
   "homepage": "https://github.com/team-armada/armada-backend#readme",
   "dependencies": {
     "@aws-sdk/client-cloudformation": "^3.197.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.202.0",
     "@aws-sdk/client-ecs": "^3.192.0",
     "@aws-sdk/client-efs": "^3.199.0",
     "@aws-sdk/client-elastic-load-balancing-v2": "^3.200.0",
