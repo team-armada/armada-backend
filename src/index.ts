@@ -78,7 +78,7 @@ app.get('/services', async (req, res) => {
  * Get all student services
  */
 app.get('/service/:service', async (req, res) => {
-  const {service} = req.params
+  const { service } = req.params;
   const result = await describeStudentService(service);
 
   res.status(StatusCodes.OK).json({
@@ -86,7 +86,6 @@ app.get('/service/:service', async (req, res) => {
     result,
   });
 });
-
 
 /**
  * Create a task definition (a template )
@@ -132,10 +131,10 @@ app.post(
 
 app.get('/templates/base', (req, res) => {
   res.status(StatusCodes.OK).json({
-    message: 'Success: Retrived base templates',
+    message: 'Success: Retrieved base templates',
     baseTemplates,
   });
-})
+});
 
 /**
  * Creates a student service based on student name, cohort, course, and version
@@ -173,7 +172,9 @@ app.post(
 
     // Get base task definition from template string
     // Have a separate folder with a javascript object that contains our container definitions
-    const baseTemplate = baseTemplates.filter(baseContainer => baseContainer.name === template)[0];
+    const baseTemplate = baseTemplates.filter(
+      baseContainer => baseContainer.name === template
+    )[0];
 
     const serviceNames = await createBatchDefinitions(
       studentNames,
@@ -185,16 +186,21 @@ app.post(
     // return an object
     // - serviceName = family
     // - revision
-    
+
     const promiseHolder = [];
 
-    for (let count = 0; count < serviceNames.length; count++){
-      const currentStudent = serviceNames[count]
-      promiseHolder.push(createStudentService(currentStudent.family, `${currentStudent.family}:${currentStudent.revision}`))
+    for (let count = 0; count < serviceNames.length; count++) {
+      const currentStudent = serviceNames[count];
+      promiseHolder.push(
+        createStudentService(
+          currentStudent.family,
+          `${currentStudent.family}:${currentStudent.revision}`
+        )
+      );
     }
 
-    const result = await Promise.all(promiseHolder)
-    
+    const result = await Promise.all(promiseHolder);
+
     res.status(StatusCodes.CREATED).json({
       message: 'Success: Created a new student service',
       result,
@@ -235,11 +241,11 @@ app.delete(
   '/services',
   async (
     req: TypedRequestBody<{
-        service: string | undefined;
+      service: string | undefined;
     }>,
     res
   ) => {
-    console.log(req.body)
+    console.log(req.body);
     const { service } = req.body;
 
     if (!service) {
@@ -343,7 +349,7 @@ app.put(
     req: TypedRequestBody<{
       data: {
         service: string | undefined;
-      }
+      };
     }>,
     res
   ) => {
@@ -373,7 +379,7 @@ app.put(
     req: TypedRequestBody<{
       data: {
         service: string | undefined;
-      }
+      };
     }>,
     res
   ) => {
@@ -402,17 +408,14 @@ app.post(
       data: {
         userType: 'admin' | 'student' | undefined;
         username: string | undefined;
-      }
+        firstName: string | undefined;
+        lastName: string | undefined;
+        email: string | undefined;
+      };
     }>,
     res
   ) => {
-    const { userType, username } = req.body.data;
-
-    if (!userType) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .send('A valid userType is required.');
-    }
+    const { userType, username, firstName, lastName, email } = req.body.data;
 
     if (!username) {
       return res
@@ -420,7 +423,37 @@ app.post(
         .send('A valid username is required.');
     }
 
-    const result = await createUser(userType, username);
+    if (!userType) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A valid userType is required.');
+    }
+
+    if (!firstName) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A valid firstName is required.');
+    }
+
+    if (!lastName) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A valid lastName is required.');
+    }
+
+    if (!email) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A valid email is required.');
+    }
+
+    const result = await createUser(
+      userType,
+      username,
+      firstName,
+      lastName,
+      email
+    );
 
     res.status(StatusCodes.OK).json({
       message: 'Success: Created a user!',

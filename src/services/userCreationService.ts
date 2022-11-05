@@ -8,19 +8,20 @@ export const createUser = async (
   userType: string,
   username: string,
   firstName: string,
-  lastName: string
+  lastName: string,
+  email: string
 ) => {
-
-    const input = {
-      UserPoolId: process.env.USER_POOL_ID,
-      Username: username,
-      UserAttributes: [
-        {Name: 'custom:isAdmin', Value: `${userType === 'admin'}`},
-        {Name: 'given_name', Value: `${firstName}`},
-        {Name: 'family_name', Value: `${lastName}`}
-      ],
-      TemporaryPassword: 'Welcome2TheFleet!'
-  }
+  const input = {
+    UserPoolId: process.env.USER_POOL_ID,
+    Username: username,
+    UserAttributes: [
+      { Name: 'custom:isAdmin', Value: `${userType === 'admin'}` },
+      { Name: 'given_name', Value: `${firstName}` },
+      { Name: 'family_name', Value: `${lastName}` },
+      { Name: 'email', Value: `${email}` },
+    ],
+    TemporaryPassword: 'Welcome2TheFleet!',
+  };
 
   try {
     const command = new AdminCreateUserCommand(input);
@@ -31,5 +32,4 @@ export const createUser = async (
       console.log(err.message);
     }
   }
-}
-
+};
