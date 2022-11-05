@@ -462,6 +462,19 @@ app.post(
   }
 );
 
+// TODO: Add redirect route for refresh with React Router.
+app.get('/*', (req, res) => {
+  res.sendFile(
+    // Specify route to entry point for front-end build.
+    '',
+    err => {
+      if (err) {
+        res.status(500).send(err);
+      }
+    }
+  );
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
