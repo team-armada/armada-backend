@@ -5,11 +5,12 @@ import {
   ListServicesCommand,
   DeleteServiceCommand,
   UpdateServiceCommand,
-  DescribeServicesCommand
+  DescribeServicesCommand,
 } from '@aws-sdk/client-ecs';
 
 import client from '../clients/ecsClient';
-import {retrieveALBTargetGroup} from '../clients/elbv2Client'
+import { retrieveALBTargetGroup } from '../clients/elbv2Client';
+import { createWorkspace } from './databaseServices/workspaceActions';
 import { getRunningTask, stopWorkspace } from './workspaceService';
 
 let targetGroupArn: string;
@@ -30,14 +31,11 @@ let targetGroupArn: string;
 //   },
 // };
 
-export const describeStudentService = async (
-  serviceName: string
-) => {
-
+export const describeStudentService = async (serviceName: string) => {
   const input = {
     cluster: 'ECS-Cluster',
-    services: [serviceName]
-  }
+    services: [serviceName],
+  };
 
   try {
     const command = new DescribeServicesCommand(input);
@@ -48,15 +46,15 @@ export const describeStudentService = async (
       console.log(err.message);
     }
   }
-}
+};
 
 export const createStudentService = async (
   serviceName: string,
-  taskDefinition: string
+  taskDefinition: string,
+  userId: string
 ) => {
-  if (!targetGroupArn){
+  if (!targetGroupArn) {
     targetGroupArn = await retrieveALBTargetGroup();
-
   }
 
   const input = {
@@ -71,16 +69,29 @@ export const createStudentService = async (
     },
     DeploymentController: 'ECS',
     SchedulingStrategy: 'REPLICA',
-    loadBalancers: [{
-      containerName: 'code-server',
-      containerPort: 8080,
-      targetGroupArn,
-    }]
+    loadBalancers: [
+      {
+        containerName: 'code-server',
+        containerPort: 8080,
+        targetGroupArn,
+      },
+    ],
   };
 
   try {
     const command = new CreateServiceCommand(input);
     const response = await client.send(command);
+
+    const workspaceDetails = {
+      uuid: serviceName,
+      desiredCount: 0,
+      userId: userId,
+    };
+
+    if (response) {
+      createWorkspace(workspaceDetails);
+    }
+
     return response;
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -122,12 +133,14 @@ export const deleteStudentService = async (service: string) => {
   // Retrieve running tasks for a service
   const tasks = await getRunningTask(service);
 
-  if (!tasks){
-    throw new Error('Response not received from AWS.')
+  if (!tasks) {
+    throw new Error('Response not received from AWS.');
   }
 
-  if (tasks.length > 0){
-    throw new Error(`Can't delete student service. All service tasks must be in a "stopped" state.`)
+  if (tasks.length > 0) {
+    throw new Error(
+      `Can't delete student service. All service tasks must be in a "stopped" state.`
+    );
   }
 
   try {
@@ -177,7 +190,7 @@ export const stopStudentService = async (service: string) => {
   };
 
   // We need to stop any running tasks within that service.
-  const stopWorkspaceResult= await stopWorkspace(service);
+  const stopWorkspaceResult = await stopWorkspace(service);
 
   try {
     const command = new UpdateServiceCommand(input);
