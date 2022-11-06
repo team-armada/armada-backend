@@ -52,6 +52,24 @@ export async function retrieveAllUsers() {
   return users;
 }
 
+// Get All Admins
+export async function retrieveAllAdmins() {
+  const users = await prisma.user.findMany({
+    where: { isAdmin: true },
+  });
+
+  return users;
+}
+
+// Get All Students
+export async function retrieveAllStudents() {
+  const users = await prisma.user.findMany({
+    where: { isAdmin: false },
+  });
+
+  return users;
+}
+
 // Get a Specific User
 export async function retrieveSpecificUser(uuid: string) {
   const user = await prisma.user.findUnique({
@@ -129,6 +147,8 @@ const userActions = {
   createUser, // done
   createUsers,
   deleteUser,
+  retrieveAllAdmins,
+  retrieveAllStudents,
   retrieveAllUsers, // done
   retrieveSpecificUser,
   updateUser,
