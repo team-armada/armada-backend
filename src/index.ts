@@ -38,10 +38,14 @@ import { baseTemplates, IBaseTemplate } from './utils/baseTemplates';
 import { createUser } from './services/userCreationService';
 
 import database from './services/databaseServices';
+import { Cohort, User_Cohort } from '@prisma/client';
 
 export interface TypedRequestBody<T> extends Express.Request {
   body: T;
 }
+
+// User Interfaces
+import { IUserUpdates } from './utils/interfaces/users';
 
 dotenv.config();
 
@@ -485,14 +489,99 @@ app.delete('/user/delete', async (req, res) => {
 /**
  * Retrieve Specified User
  */
+app.get(
+  '/user',
+  async (
+    req: TypedRequestBody<{
+      data: {
+        userId: string | undefined;
+      };
+    }>,
+    res
+  ) => {
+    const { userId } = req.body.data;
+
+    if (!userId) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A valid user id is required.');
+    }
+
+    const { userActions } = database;
+    const user = await userActions.retrieveSpecificUser(userId);
+
+    res.status(StatusCodes.OK).send({
+      message: `Success: student with id ${userId} was retrieved`,
+      result: user,
+    });
+  }
+);
 
 /**
  * Update a user
  */
+app.put('/user', async (req: TypedRequestBody<IUserUpdates>, res) => {
+  const { data } = req.body;
+
+  if (!data.uuid) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .send('A valid user id is required.');
+  }
+
+  const userDetails = {
+    // uuid: data.uuid,
+    ...(data.uuid && { uuid: data.uuid }),
+    ...(data.username && { username: data.username }),
+    ...(data.email && { email: data.email }),
+    ...(data.firstName && { firstName: data.firstName }),
+    ...(data.lastName && { lastName: data.lastName }),
+    ...(data.isAdmin && { isAdmin: data.isAdmin }),
+  };
+
+  // Conditionally add existing properties to the object we're using.
+  // for (let property in data) {
+  //   if (data[property] !== undefined) {
+  //     userDetails[data] = data[property];
+  //   }
+  // }
+
+  const { userActions } = database;
+  const user = await userActions.updateUser(userDetails);
+
+  res.status(StatusCodes.OK).send({
+    message: `Success: student with id ${data.uuid} was retrieved`,
+    result: user,
+  });
+});
 
 /**
  * Add A specific user to cohort
  */
+// app.post(
+//   '/cohort',
+//   async (
+//     req: TypedRequestBody<{
+//       data: {
+//         relationshipDetails: User_Cohort {
+//           userId: string | undefined;
+//           cohortId: number | undefined;
+//         }
+//       };
+//     }>,
+//     res
+//   ) => {
+//     const { userActions } = database;
+//     const { relationshipDetails } = req.body.data;
+
+//     const relationship = await userActions.addUserToCohort(relationshipDetails);
+
+//     res.status(StatusCodes.OK).send({
+//       message: `Success: student with id ${userId} was added to cohort ${cohortId}`,
+//       result: relationship,
+//     });
+//   }
+// );
 
 /**
  * Add multiple users to a cohort
@@ -505,6 +594,73 @@ app.delete('/user/delete', async (req, res) => {
 /**
  * Add multiple users to a course
  */
+
+/****************************************************************
+ * Cohort Routes
+ *****************************************************************/
+app.post(
+  '/cohort/create',
+  async (
+    req: TypedRequestBody<{
+      data: {
+        name: string | undefined;
+      };
+    }>,
+    res
+  ) => {
+    const { name } = req.body.data;
+
+    if (!name) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A cohort name is required.');
+    }
+
+    const result = await database.cohortActions.createCohort(name);
+
+    res.status(StatusCodes.OK).json({
+      message: `Success: Created the ${name} cohort.`,
+      result,
+    });
+  }
+);
+
+/****************************************************************
+ * Course Routes
+ *****************************************************************/
+app.post(
+  '/course/create',
+  async (
+    req: TypedRequestBody<{
+      data: {
+        name: string | undefined;
+        cohortId: number | undefined;
+      };
+    }>,
+    res
+  ) => {
+    const { name, cohortId } = req.body.data;
+
+    if (!name) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A course name is required.');
+    }
+
+    if (!cohortId) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A cohort id is required.');
+    }
+
+    const result = await database.courseActions.createCourse(name, cohortId);
+
+    res.status(StatusCodes.OK).json({
+      message: `Success: Created the ${name} course in the cohort ${cohortId}.`,
+      result,
+    });
+  }
+);
 
 // TODO: Add redirect route for refresh with React Router.
 app.get('/*', (req, res) => {
