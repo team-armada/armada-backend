@@ -34,7 +34,10 @@ import {
 } from './utils/createTaskDefinitions';
 
 import { baseTemplates, IBaseTemplate } from './utils/baseTemplates';
+
 import { createUser } from './services/userCreationService';
+
+import database from './services/databaseServices';
 
 export interface TypedRequestBody<T> extends Express.Request {
   body: T;
@@ -386,9 +389,13 @@ app.put(
   }
 );
 
+/****************************************************************
+ * Users Routes
+ *****************************************************************/
+
 // Create Users
 app.post(
-  '/users/create',
+  '/user/create',
   async (
     req: TypedRequestBody<{
       data: {
@@ -441,12 +448,31 @@ app.post(
       email
     );
 
+    console.log(result);
+
     res.status(StatusCodes.OK).json({
       message: 'Success: Created a user!',
       result,
     });
   }
 );
+
+/**
+ * Get all users from postgres database
+ */
+app.get('/user/all', async (req, res) => {
+  const { userActions } = database;
+  const users = await userActions.retrieveAllUsers();
+
+  res.status(StatusCodes.OK).send({
+    message: 'Success: Fetched all users',
+    result: users,
+  });
+});
+
+/**
+ *
+ */
 
 // TODO: Add redirect route for refresh with React Router.
 app.get('/*', (req, res) => {
