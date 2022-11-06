@@ -264,20 +264,6 @@ app.delete(
 );
 
 /**
- * Get all active workspaces (optionally filtering them.).
- */
-
-// TODO: Implement filtering via params.
-// app.get('/workspaces', async (req, res) => {
-//   const result = await getWorkspaces();
-
-//   res.status(StatusCodes.OK).json({
-//     message: 'Success: Retrieved all active workspaces.',
-//     result,
-//   });
-// });
-
-/**
  * Runs a workspace (an ECS task)
  */
 app.post(
