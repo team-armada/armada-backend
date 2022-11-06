@@ -2,9 +2,7 @@ import { prisma } from './index';
 import { Cohort } from '@prisma/client';
 
 // Create a Cohort
-export async function createCohort(cohortDetails: Cohort) {
-  const { name } = cohortDetails;
-
+export async function createCohort(name: string) {
   const cohort = await prisma.cohort.create({
     data: {
       name,

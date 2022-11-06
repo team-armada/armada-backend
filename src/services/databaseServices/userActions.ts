@@ -1,6 +1,15 @@
 import { prisma } from './index';
 import { User, User_Cohort, User_Course } from '@prisma/client';
 
+export interface IUserUpdates {
+  uuid: string;
+  username?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  isAdmin?: boolean;
+}
+
 // Create a User
 async function createUser(userDetails: User) {
   const { uuid, username, email, firstName, lastName, isAdmin } = userDetails;
@@ -53,7 +62,7 @@ export async function retrieveSpecificUser(uuid: string) {
 }
 
 // Update a Workspace
-export async function updateUser(userDetails: User) {
+export async function updateUser(userDetails: IUserUpdates) {
   const { uuid } = userDetails;
 
   const user = await prisma.user.update({
@@ -117,10 +126,10 @@ export async function addUsersToCourse(
 }
 
 const userActions = {
-  createUser,
+  createUser, // done
   createUsers,
   deleteUser,
-  retrieveAllUsers,
+  retrieveAllUsers, // done
   retrieveSpecificUser,
   updateUser,
   addUserToCohort,

@@ -2,9 +2,7 @@ import { prisma } from './index';
 import { Course } from '@prisma/client';
 
 // Create a Course
-async function createCourse(courseDetails: Course) {
-  const { name, cohortId } = courseDetails;
-
+async function createCourse(name: string, cohortId: number) {
   const course = await prisma.course.create({
     data: {
       name,

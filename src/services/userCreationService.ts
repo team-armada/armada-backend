@@ -1,6 +1,7 @@
 import { AdminCreateUserCommand } from '@aws-sdk/client-cognito-identity-provider';
 
 import client from '../clients/cognitoClient';
+import database from './databaseServices';
 
 // TODO: Start with one admin user already!
 
@@ -26,6 +27,21 @@ export const createUser = async (
   try {
     const command = new AdminCreateUserCommand(input);
     const response = await client.send(command);
+
+    const attributes = response.User?.Attributes;
+    const uuid = attributes?.find(attribute => attribute.Name === 'sub')?.Value;
+
+    if (uuid !== undefined) {
+      database.userActions.createUser({
+        uuid,
+        username,
+        email,
+        firstName,
+        lastName,
+        isAdmin: userType === 'admin',
+      });
+    }
+
     return response;
   } catch (err: unknown) {
     if (err instanceof Error) {
