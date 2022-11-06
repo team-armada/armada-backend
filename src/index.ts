@@ -471,7 +471,39 @@ app.get('/user/all', async (req, res) => {
 });
 
 /**
- *
+ * Delete User
+ */
+app.delete('/user/delete', async (req, res) => {
+  const { userActions } = database;
+  await userActions.deleteUser(req.body.uuid);
+
+  res.status(StatusCodes.ACCEPTED).send({
+    message: `Success: student with id ${req.body.uuid} was deleted`,
+  });
+});
+
+/**
+ * Retrieve Specified User
+ */
+
+/**
+ * Update a user
+ */
+
+/**
+ * Add A specific user to cohort
+ */
+
+/**
+ * Add multiple users to a cohort
+ */
+
+/**
+ * Add user to a course
+ */
+
+/**
+ * Add multiple users to a course
  */
 
 // TODO: Add redirect route for refresh with React Router.
