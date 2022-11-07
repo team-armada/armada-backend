@@ -9,6 +9,7 @@ import serviceRouter from './routes/service';
 import workspaceRouter from './routes/workspace';
 import userRouter from './routes/user';
 import courseRouter from './routes/course';
+
 export interface TypedRequestBody<T> extends Express.Request {
   body: T;
 }
