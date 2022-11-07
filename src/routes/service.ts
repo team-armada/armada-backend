@@ -13,6 +13,11 @@ import { baseTemplates } from '../utils/baseTemplates';
 import { createBatchDefinitions } from '../utils/createTaskDefinitions';
 const router = Router();
 
+interface IStudentObject {
+  username: string;
+  uuid: string;
+}
+
 /**
  * Get all student services
  */
@@ -46,18 +51,16 @@ router.post(
   async (
     req: TypedRequestBody<{
       data: {
-        studentNames: string[] | undefined;
+        studentNames: IStudentObject[] | undefined;
         cohort: string | undefined;
         course: string | undefined;
         template: string | undefined;
-        userId: string | undefined;
         courseId: number | undefined;
       };
     }>,
     res
   ) => {
-    const { studentNames, cohort, course, template, userId, courseId } =
-      req.body.data;
+    const { studentNames, cohort, course, template, courseId } = req.body.data;
 
     if (!studentNames) {
       return res.status(400).send('An array of student names is required.');
@@ -75,10 +78,6 @@ router.post(
       return res.status(400).send('A template is required');
     }
 
-    if (!userId) {
-      return res.status(400).send('A user id is required');
-    }
-
     if (!courseId) {
       return res.status(400).send('A course name is required.');
     }
@@ -89,8 +88,10 @@ router.post(
       baseContainer => baseContainer.name === template
     )[0];
 
+    const onlyStudentNames = studentNames.map(student => student.username);
+
     const serviceNames = await createBatchDefinitions(
-      studentNames,
+      onlyStudentNames,
       cohort,
       course,
       baseTemplate.definition
@@ -108,7 +109,7 @@ router.post(
         createStudentService(
           currentStudent.family,
           `${currentStudent.family}:${currentStudent.revision}`,
-          userId,
+          studentNames[count].uuid,
           courseId
         )
       );

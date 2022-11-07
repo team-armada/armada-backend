@@ -87,7 +87,7 @@ export const createStudentService = async (
       uuid: serviceName,
       desiredCount: 0,
       userId,
-      courseId,
+      courseId: Number(courseId),
     };
 
     if (response) {

@@ -102,6 +102,29 @@ export async function retrieveAllStudentsNotInCohort(cohortId: number) {
   return users;
 }
 
+// Get All Students from a Course that don't have a workspace for that course.
+export async function retrieveCourseStudentsWithoutWorkspaces(
+  courseId: number
+) {
+  const users = await prisma.user.findMany({
+    where: {
+      isAdmin: false,
+      workspaces: {
+        none: {
+          courseId,
+        },
+      },
+      user_course: {
+        some: {
+          courseId,
+        },
+      },
+    },
+  });
+
+  return users;
+}
+
 // Get a Specific User
 export async function retrieveSpecificUser(username: string) {
   const user = await prisma.user.findUnique({
@@ -190,9 +213,11 @@ const userActions = {
   createUser,
   createUsers,
   deleteUser,
+  retrieveCourseStudentsWithoutWorkspaces,
   retrieveAllUsers,
   retrieveAllAdmins,
   retrieveAllStudents,
+  retrieveAllStudentsInCohort,
   retrieveAllStudentsNotInCohort,
   retrieveSpecificUser,
   updateUser,

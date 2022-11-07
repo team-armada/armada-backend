@@ -152,6 +152,29 @@ router.get('/allStudentsNotInCohort/:cohortId', async (req, res) => {
 });
 
 /**
+ * Get all students who don't have a workspace for a given course.
+ */
+router.get('/allStudentsWithoutWorkspaces/:courseId', async (req, res) => {
+  const { courseId } = req.params;
+
+  if (!courseId) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .send('The requested course could not be found.');
+  }
+
+  const users =
+    await database.userActions.retrieveCourseStudentsWithoutWorkspaces(
+      Number(courseId)
+    );
+
+  res.status(StatusCodes.OK).send({
+    message: 'Success: Fetched all student users.',
+    result: users,
+  });
+});
+
+/**
  * Delete User
  */
 router.delete('/delete', async (req, res) => {
