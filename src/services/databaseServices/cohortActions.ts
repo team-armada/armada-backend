@@ -1,5 +1,4 @@
 import { prisma } from './index';
-import { Cohort } from '@prisma/client';
 
 // Create a Cohort
 export async function createCohort(name: string) {

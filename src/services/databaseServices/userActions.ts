@@ -94,9 +94,7 @@ export async function updateUser(userDetails: IUserUpdates) {
 }
 
 // Add User to Cohort
-export async function addUserToCohort(relationshipDetails: User_Cohort) {
-  const { userId, cohortId } = relationshipDetails;
-
+export async function addUserToCohort(userId: string, cohortId: number) {
   const relationship = await prisma.user_Cohort.create({
     data: {
       userId,
