@@ -30,14 +30,14 @@ export const getRunningTask = async (serviceName: string) => {
     const command = new ListTasksCommand(input);
     const response = await client.send(command);
 
-    if (!response){
-      throw new Error('No response received from AWS.')
+    if (!response) {
+      throw new Error('No response received from AWS.');
     }
 
-    const runningTasks = response?.taskArns
+    const runningTasks = response?.taskArns;
 
-    if (!runningTasks){
-      throw new Error('The service you provided does not exist.')
+    if (!runningTasks) {
+      throw new Error('The service you provided does not exist.');
     }
 
     return runningTasks;
@@ -72,18 +72,24 @@ export const runWorkspace = async (taskDefinitionArn: string) => {
 
 /**
  * Stop a workspace
- * @param {string} taskID - workspace id
+ * @param {string} service - service name
  *                        - e.g. "1dc5c17a-422b-4dc4-b493-371970c6c4d6"
  * @param {string} reason - reason for stopping workspace
  */
 export const stopWorkspace = async (
-  taskID: string,
+  service: string,
   reason = 'SESSION_ENDED'
 ) => {
+  const taskID = await getRunningTask(service);
+
+  if (!taskID) {
+    throw new Error('No tasks were found for the provided service.');
+  }
+
   const input = {
     cluster: 'ECS-Cluster',
     reason,
-    task: taskID,
+    task: taskID[0],
   };
 
   const command = new StopTaskCommand(input);

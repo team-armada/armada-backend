@@ -26,6 +26,7 @@ app.use(cors());
 
 // Body Parsers
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/cohort', cohortRouter);

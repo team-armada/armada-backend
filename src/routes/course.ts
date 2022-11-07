@@ -9,10 +9,14 @@ const router = Router();
  */
 router.get('/all', async (req, res) => {
   const courses = await database.courseActions.retrieveAllCourses();
+  const cohorts = await database.cohortActions.retrieveAllCohorts();
 
   res.status(StatusCodes.OK).send({
     message: 'Success: Fetched all courses.',
-    result: courses,
+    result: {
+      courses,
+      cohorts,
+    },
   });
 });
 

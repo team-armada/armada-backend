@@ -23,6 +23,7 @@ router.post(
     }>,
     res
   ) => {
+    console.log(req.body.data);
     const { userType, username, firstName, lastName, email } = req.body.data;
 
     if (!username) {

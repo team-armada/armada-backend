@@ -77,6 +77,15 @@ export async function retrieveSpecificUser(username: string) {
     include: {
       user_cohort: true,
       user_course: true,
+      workspaces: {
+        include: {
+          Course: {
+            include: {
+              cohort: true,
+            },
+          },
+        },
+      },
     },
   });
 

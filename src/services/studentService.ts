@@ -11,7 +11,6 @@ import {
 import client from '../clients/ecsClient';
 import { retrieveALBTargetGroup } from '../clients/elbv2Client';
 import database from './databaseServices';
-import { createWorkspace } from './databaseServices/workspaceActions';
 import { getRunningTask, stopWorkspace } from './workspaceService';
 
 let targetGroupArn: string;
@@ -92,7 +91,7 @@ export const createStudentService = async (
     };
 
     if (response) {
-      createWorkspace(workspaceDetails);
+      database.workspaceActions.createWorkspace(workspaceDetails);
     }
 
     return response;
@@ -155,6 +154,11 @@ export const deleteStudentService = async (service: string) => {
   try {
     const command = new DeleteServiceCommand(input);
     const response = await client.send(command);
+
+    if (response) {
+      database.workspaceActions.deleteWorkspace(service);
+    }
+
     return response;
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -178,6 +182,11 @@ export const startStudentService = async (service: string) => {
   try {
     const command = new UpdateServiceCommand(input);
     const response = await client.send(command);
+
+    if (response) {
+      database.workspaceActions.updateWorkspace(service, 1);
+    }
+
     return response;
   } catch (err: unknown) {
     if (err instanceof Error) {
@@ -204,6 +213,11 @@ export const stopStudentService = async (service: string) => {
   try {
     const command = new UpdateServiceCommand(input);
     const response = await client.send(command);
+
+    if (response) {
+      database.workspaceActions.updateWorkspace(service, 0);
+    }
+
     return response;
   } catch (err: unknown) {
     if (err instanceof Error) {
