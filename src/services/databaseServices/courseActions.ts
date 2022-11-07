@@ -53,6 +53,17 @@ export async function retrieveAllUsersFromSpecificCourse(courseId: number) {
   return users;
 }
 
+// Get Courses from List
+export async function retrieveCoursesFromList(list: number[]) {
+  const cohorts = await prisma.course.findMany({
+    where: {
+      id: { in: list },
+    },
+  });
+
+  return cohorts;
+}
+
 // Get a Specific Course
 export async function retrieveSpecificCourse(id: number) {
   const course = await prisma.course.findUnique({
@@ -79,6 +90,7 @@ const courseActions = {
   deleteCourse,
   retrieveAllCourses,
   retrieveAllCoursesFromCohort,
+  retrieveCoursesFromList,
   retrieveAllUsersFromSpecificCourse,
   retrieveSpecificCourse,
   updateCourse,

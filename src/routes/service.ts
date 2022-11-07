@@ -51,11 +51,13 @@ router.post(
         course: string | undefined;
         template: string | undefined;
         userId: string | undefined;
+        courseId: number | undefined;
       };
     }>,
     res
   ) => {
-    const { studentNames, cohort, course, template, userId } = req.body.data;
+    const { studentNames, cohort, course, template, userId, courseId } =
+      req.body.data;
 
     if (!studentNames) {
       return res.status(400).send('An array of student names is required.');
@@ -75,6 +77,10 @@ router.post(
 
     if (!userId) {
       return res.status(400).send('A user id is required');
+    }
+
+    if (!courseId) {
+      return res.status(400).send('A course name is required.');
     }
 
     // Get base task definition from template string
@@ -102,7 +108,8 @@ router.post(
         createStudentService(
           currentStudent.family,
           `${currentStudent.family}:${currentStudent.revision}`,
-          userId
+          userId,
+          courseId
         )
       );
     }

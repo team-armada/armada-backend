@@ -26,6 +26,17 @@ export async function retrieveAllCohorts() {
   return cohorts;
 }
 
+// Get Cohorts from List
+export async function retrieveCohortsFromList(list: number[]) {
+  const cohorts = await prisma.cohort.findMany({
+    where: {
+      id: { in: list },
+    },
+  });
+
+  return cohorts;
+}
+
 // Get a Specific Cohort
 export async function retrieveSpecificCohort(id: number) {
   const cohort = await prisma.cohort.findUnique({
@@ -51,6 +62,7 @@ const cohortActions = {
   createCohort,
   deleteCohort,
   retrieveAllCohorts,
+  retrieveCohortsFromList,
   retrieveSpecificCohort,
   updateCohort,
 };

@@ -74,6 +74,10 @@ export async function retrieveAllStudents() {
 export async function retrieveSpecificUser(username: string) {
   const user = await prisma.user.findUnique({
     where: { username },
+    include: {
+      user_cohort: true,
+      user_course: true,
+    },
   });
 
   return user;

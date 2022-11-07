@@ -10,6 +10,7 @@ import {
 
 import client from '../clients/ecsClient';
 import { retrieveALBTargetGroup } from '../clients/elbv2Client';
+import database from './databaseServices';
 import { createWorkspace } from './databaseServices/workspaceActions';
 import { getRunningTask, stopWorkspace } from './workspaceService';
 
@@ -51,7 +52,8 @@ export const describeStudentService = async (serviceName: string) => {
 export const createStudentService = async (
   serviceName: string,
   taskDefinition: string,
-  userId: string
+  userId: string,
+  courseId: number
 ) => {
   if (!targetGroupArn) {
     targetGroupArn = await retrieveALBTargetGroup();
@@ -85,7 +87,8 @@ export const createStudentService = async (
     const workspaceDetails = {
       uuid: serviceName,
       desiredCount: 0,
-      userId: userId,
+      userId,
+      courseId,
     };
 
     if (response) {
@@ -102,23 +105,29 @@ export const createStudentService = async (
 
 // Retrieves all student services
 
-export const getAllStudentServices = async () => {
-  const input = {
-    cluster: 'ECS-Cluster',
-    maxResults: 100,
-    sort: 'ASC',
-    status: 'ACTIVE',
-  };
+// From AWS
+// export const getAllStudentServices = async () => {
+//   const input = {
+//     cluster: 'ECS-Cluster',
+//     maxResults: 100,
+//     sort: 'ASC',
+//     status: 'ACTIVE',
+//   };
 
-  try {
-    const command = new ListServicesCommand(input);
-    const response = await client.send(command);
-    return response;
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      console.log(err.message);
-    }
-  }
+//   try {
+//     const command = new ListServicesCommand(input);
+//     const response = await client.send(command);
+//     return response;
+//   } catch (err: unknown) {
+//     if (err instanceof Error) {
+//       console.log(err.message);
+//     }
+//   }
+// };
+
+export const getAllStudentServices = async () => {
+  const workspaces = await database.workspaceActions.retrieveAllWorkspaces();
+  return workspaces;
 };
 
 //Deletes a service

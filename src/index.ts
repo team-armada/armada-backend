@@ -6,7 +6,6 @@ import morganBody from 'morgan-body';
 import cohortRouter from './routes/cohort';
 import templateRouter from './routes/template';
 import serviceRouter from './routes/service';
-import workspaceRouter from './routes/workspace';
 import userRouter from './routes/user';
 import courseRouter from './routes/course';
 
@@ -34,7 +33,6 @@ app.use('/course', courseRouter);
 app.use('/service', serviceRouter);
 app.use('/template', templateRouter);
 app.use('/user', userRouter);
-app.use('/workspace', workspaceRouter);
 
 // TODO: Add redirect route for refresh with React Router.
 app.get('/*', (req, res) => {

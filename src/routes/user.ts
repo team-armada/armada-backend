@@ -130,13 +130,30 @@ router.get('/:username', async (req, res) => {
   }
 
   const user = await database.userActions.retrieveSpecificUser(username);
-  // const courses = await database.courseActions.
-  // const cohort = await database.cohortActions.
+
+  if (!user) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .send('The user you requested could not be found.');
+  }
+
+  const cohortIds = user.user_cohort.map(cohort => cohort.cohortId);
+  const courseIds = user.user_course.map(course => course.courseId);
+
+  const cohorts = await database.cohortActions.retrieveCohortsFromList(
+    cohortIds
+  );
+
+  const courses = await database.courseActions.retrieveCoursesFromList(
+    courseIds
+  );
 
   res.status(StatusCodes.OK).send({
     message: `Success: ${username} was retrieved`,
     result: {
       user,
+      cohorts,
+      courses,
     },
   });
 });

@@ -3,13 +3,14 @@ import { Workspace } from '@prisma/client';
 
 // Create a Workspace
 export async function createWorkspace(workspaceDetails: Workspace) {
-  const { uuid, desiredCount, userId } = workspaceDetails;
+  const { uuid, desiredCount, userId, courseId } = workspaceDetails;
 
   const workspace = await prisma.workspace.create({
     data: {
       uuid,
       desiredCount,
       userId,
+      courseId,
     },
   });
 
@@ -27,7 +28,16 @@ export async function deleteWorkspace(uuid: string) {
 
 // Get All Workspaces
 export async function retrieveAllWorkspaces() {
-  const workspaces = await prisma.workspace.findMany();
+  const workspaces = await prisma.workspace.findMany({
+    include: {
+      user: true,
+      Course: {
+        include: {
+          cohort: true,
+        },
+      },
+    },
+  });
   return workspaces;
 }
 

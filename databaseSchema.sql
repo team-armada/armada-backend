@@ -18,6 +18,8 @@ CREATE TABLE "public"."Workspace" (
   uuid VARCHAR(255) PRIMARY KEY NOT NULL,
   desiredCount INTEGER NOT NULL,
   userId VARCHAR(255) NOT NULL,
+  courseId INTEGER NOT NULL,
+  FOREIGN KEY (courseId) REFERENCES "public"."Course"(id) ON DELETE CASCADE,
   FOREIGN KEY (userId) REFERENCES "public"."User"(uuid) ON DELETE CASCADE
 );
 
