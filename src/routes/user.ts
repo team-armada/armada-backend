@@ -4,7 +4,7 @@ import { TypedRequestBody } from '../index';
 import { createUser } from '../services/userCreationService';
 import database from '../services/databaseServices/index';
 import { IUserUpdates } from '../services/databaseServices/userActions';
-import { User_Course } from '@prisma/client';
+import { User_Cohort, User_Course } from '@prisma/client';
 
 const router = Router();
 
@@ -100,6 +100,50 @@ router.get('/allAdmins', async (req, res) => {
  */
 router.get('/allStudents', async (req, res) => {
   const users = await database.userActions.retrieveAllStudents();
+
+  res.status(StatusCodes.OK).send({
+    message: 'Success: Fetched all student users.',
+    result: users,
+  });
+});
+
+/**
+ * Get all students in a specific cohort.
+ */
+router.get('/allStudentsInCohort/:cohortId', async (req, res) => {
+  const { cohortId } = req.params;
+
+  if (!cohortId) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .send('The requested cohort could not be found.');
+  }
+
+  const users = await database.userActions.retrieveAllStudentsNotInCohort(
+    Number(cohortId)
+  );
+
+  res.status(StatusCodes.OK).send({
+    message: 'Success: Fetched all student users.',
+    result: users,
+  });
+});
+
+/**
+ * Get all students not in cohort.
+ */
+router.get('/allStudentsNotInCohort/:cohortId', async (req, res) => {
+  const { cohortId } = req.params;
+
+  if (!cohortId) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .send('The user you requested could not be found.');
+  }
+
+  const users = await database.userActions.retrieveAllStudentsNotInCohort(
+    Number(cohortId)
+  );
 
   res.status(StatusCodes.OK).send({
     message: 'Success: Fetched all student users.',
@@ -247,6 +291,31 @@ router.post(
 /**
  * Add multiple users to a cohort
  */
+router.post(
+  '/addUsersToCohort',
+  async (
+    req: TypedRequestBody<{
+      data: User_Cohort[] | undefined;
+    }>,
+    res
+  ) => {
+    console.log(req.body);
+    const data = req.body.data;
+
+    if (!data) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A valid user id is required.');
+    }
+
+    const relationship = await database.userActions.addUsersToCohort(data);
+
+    res.status(StatusCodes.OK).send({
+      message: `Success: All cohort-student relationships were successfully defined.`,
+      result: relationship,
+    });
+  }
+);
 
 /**
  * Add user to a course

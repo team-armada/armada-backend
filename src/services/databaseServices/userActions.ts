@@ -70,6 +70,38 @@ export async function retrieveAllStudents() {
   return users;
 }
 
+// Get All Users in a Specific Cohort
+export async function retrieveAllStudentsInCohort(cohortId: number) {
+  const users = await prisma.user.findMany({
+    where: {
+      isAdmin: false,
+      user_cohort: {
+        some: {
+          cohortId,
+        },
+      },
+    },
+  });
+
+  return users;
+}
+
+// Get All Students Not in a Specific Cohort
+export async function retrieveAllStudentsNotInCohort(cohortId: number) {
+  const users = await prisma.user.findMany({
+    where: {
+      isAdmin: false,
+      user_cohort: {
+        none: {
+          cohortId,
+        },
+      },
+    },
+  });
+
+  return users;
+}
+
 // Get a Specific User
 export async function retrieveSpecificUser(username: string) {
   const user = await prisma.user.findUnique({
@@ -155,12 +187,13 @@ export async function addUsersToCourse(
 }
 
 const userActions = {
-  createUser, // done
+  createUser,
   createUsers,
   deleteUser,
+  retrieveAllUsers,
   retrieveAllAdmins,
   retrieveAllStudents,
-  retrieveAllUsers, // done
+  retrieveAllStudentsNotInCohort,
   retrieveSpecificUser,
   updateUser,
   addUserToCohort,
