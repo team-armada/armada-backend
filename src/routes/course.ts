@@ -4,6 +4,39 @@ import { TypedRequestBody } from '../index';
 import database from '../services/databaseServices/index';
 const router = Router();
 
+/**
+ * Get all courses from postgres database
+ */
+router.get('/all', async (req, res) => {
+  const courses = await database.courseActions.retrieveAllCourses();
+
+  res.status(StatusCodes.OK).send({
+    message: 'Success: Fetched all courses.',
+    result: courses,
+  });
+});
+
+/**
+ * Get all students for a specific course.
+ */
+
+router.get('/:courseId', async (req, res) => {
+  const { courseId } = req.params;
+  const numberId = Number(courseId);
+
+  const course = await database.courseActions.retrieveSpecificCourse(numberId);
+  const students =
+    await database.courseActions.retrieveAllUsersFromSpecificCourse(numberId);
+
+  res.status(StatusCodes.OK).send({
+    message: 'Success: Fetched all students for a specific course.',
+    result: {
+      course,
+      students,
+    },
+  });
+});
+
 router.post(
   '/create',
   async (

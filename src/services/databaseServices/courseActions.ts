@@ -24,7 +24,11 @@ export async function deleteCourse(id: number) {
 
 // Get All Courses
 export async function retrieveAllCourses() {
-  const courses = await prisma.course.findMany();
+  const courses = await prisma.course.findMany({
+    include: {
+      cohort: true,
+    },
+  });
   return courses;
 }
 

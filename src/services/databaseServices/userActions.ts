@@ -71,9 +71,9 @@ export async function retrieveAllStudents() {
 }
 
 // Get a Specific User
-export async function retrieveSpecificUser(uuid: string) {
+export async function retrieveSpecificUser(username: string) {
   const user = await prisma.user.findUnique({
-    where: { uuid },
+    where: { username },
   });
 
   return user;

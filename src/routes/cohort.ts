@@ -4,7 +4,21 @@ import { TypedRequestBody } from '../index';
 import database from '../services/databaseServices/index';
 const router = Router();
 
-// Create a Cohort
+/**
+ * Get all cohorts from postgres database
+ */
+router.get('/all', async (req, res) => {
+  const cohorts = await database.cohortActions.retrieveAllCohorts();
+
+  res.status(StatusCodes.OK).send({
+    message: 'Success: Fetched all cohorts.',
+    result: cohorts,
+  });
+});
+
+/**
+ *  Create a Cohort
+ */
 router.post(
   '/create',
   async (
@@ -31,5 +45,29 @@ router.post(
     });
   }
 );
+
+/**
+ *  Display all courses for a given cohort.
+ */
+
+router.get('/:cohortId', async (req, res) => {
+  const { cohortId } = req.params;
+  const numberId = Number(cohortId);
+
+  const courses = await database.courseActions.retrieveAllCoursesFromCohort(
+    numberId
+  );
+
+  const cohort = await database.cohortActions.retrieveSpecificCohort(numberId);
+
+  // TODO: Update to access names.
+  res.status(StatusCodes.OK).send({
+    message: 'Success: Fetched all courses for the given cohort.',
+    result: {
+      cohort,
+      courses,
+    },
+  });
+});
 
 export default router;

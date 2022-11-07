@@ -81,6 +81,30 @@ router.get('/all', async (req, res) => {
 });
 
 /**
+ * Get all students from postgres database
+ */
+router.get('/allAdmins', async (req, res) => {
+  const users = await database.userActions.retrieveAllAdmins();
+
+  res.status(StatusCodes.OK).send({
+    message: 'Success: Fetched all admin users.',
+    result: users,
+  });
+});
+
+/**
+ * Get all students from postgres database
+ */
+router.get('/allStudents', async (req, res) => {
+  const users = await database.userActions.retrieveAllStudents();
+
+  res.status(StatusCodes.OK).send({
+    message: 'Success: Fetched all student users.',
+    result: users,
+  });
+});
+
+/**
  * Delete User
  */
 router.delete('/delete', async (req, res) => {
@@ -94,32 +118,22 @@ router.delete('/delete', async (req, res) => {
 /**
  * Retrieve Specified User
  */
-router.get(
-  '/',
-  async (
-    req: TypedRequestBody<{
-      data: {
-        userId: string | undefined;
-      };
-    }>,
-    res
-  ) => {
-    const { userId } = req.body.data;
+router.get('/:username', async (req, res) => {
+  const { username } = req.params;
 
-    if (!userId) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .send('A valid user id is required.');
-    }
-
-    const user = await database.userActions.retrieveSpecificUser(userId);
-
-    res.status(StatusCodes.OK).send({
-      message: `Success: student with id ${userId} was retrieved`,
-      result: user,
-    });
+  if (!username) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .send('A valid user id is required.');
   }
-);
+
+  const user = await database.userActions.retrieveSpecificUser(username);
+
+  res.status(StatusCodes.OK).send({
+    message: `Success: ${username} was retrieved`,
+    result: user,
+  });
+});
 
 /**
  * Update a user
