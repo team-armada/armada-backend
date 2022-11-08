@@ -1,6 +1,10 @@
 import { prisma } from './index';
 import { Course } from '@prisma/client';
 
+interface ICourseDetails {
+  name: string;
+}
+
 // Create a Course
 async function createCourse(name: string, cohortId: number) {
   const course = await prisma.course.create({
@@ -74,7 +78,7 @@ export async function retrieveSpecificCourse(id: number) {
 }
 
 // Update a Course
-export async function updateCourse(id: number, courseDetails: Course) {
+export async function updateCourse(id: number, courseDetails: ICourseDetails) {
   const updateCourse = await prisma.course.update({
     where: { id },
     data: {

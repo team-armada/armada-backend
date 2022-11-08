@@ -119,7 +119,7 @@ router.get('/allStudentsInCohort/:cohortId', async (req, res) => {
       .send('The requested cohort could not be found.');
   }
 
-  const users = await database.userActions.retrieveAllStudentsNotInCohort(
+  const users = await database.userActions.retrieveAllStudentsInCohort(
     Number(cohortId)
   );
 
@@ -144,6 +144,36 @@ router.get('/allStudentsNotInCohort/:cohortId', async (req, res) => {
   const users = await database.userActions.retrieveAllStudentsNotInCohort(
     Number(cohortId)
   );
+
+  res.status(StatusCodes.OK).send({
+    message: 'Success: Fetched all student users.',
+    result: users,
+  });
+});
+
+/**
+ * Get all students from cohort that are not in the current course.
+ */
+router.get('/allStudentsNotInCourse/:cohortId/:courseId', async (req, res) => {
+  const { courseId, cohortId } = req.params;
+
+  if (!courseId) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .send('The course you requested could not be found.');
+  }
+
+  if (!cohortId) {
+    return res
+      .status(StatusCodes.NOT_FOUND)
+      .send('The cohort you requested could not be found.');
+  }
+
+  const users =
+    await database.userActions.retrieveAllStudentsInCohortNotInCourse(
+      Number(cohortId),
+      Number(courseId)
+    );
 
   res.status(StatusCodes.OK).send({
     message: 'Success: Fetched all student users.',
@@ -177,8 +207,9 @@ router.get('/allStudentsWithoutWorkspaces/:courseId', async (req, res) => {
 /**
  * Delete User
  */
-router.delete('/delete', async (req, res) => {
-  await database.userActions.deleteUser(req.body.uuid);
+router.delete('/delete/:uuid', async (req, res) => {
+  const { uuid } = req.params;
+  await database.userActions.deleteUser(uuid);
 
   res.status(StatusCodes.ACCEPTED).send({
     message: `Success: student with id ${req.body.uuid} was deleted`,
@@ -194,7 +225,7 @@ router.get('/:username', async (req, res) => {
   if (!username) {
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .send('A valid user id is required.');
+      .send('A valid username is required.');
   }
 
   const user = await database.userActions.retrieveSpecificUser(username);
@@ -205,24 +236,9 @@ router.get('/:username', async (req, res) => {
       .send('The user you requested could not be found.');
   }
 
-  const cohortIds = user.user_cohort.map(cohort => cohort.cohortId);
-  const courseIds = user.user_course.map(course => course.courseId);
-
-  const cohorts = await database.cohortActions.retrieveCohortsFromList(
-    cohortIds
-  );
-
-  const courses = await database.courseActions.retrieveCoursesFromList(
-    courseIds
-  );
-
   res.status(StatusCodes.OK).send({
     message: `Success: ${username} was retrieved`,
-    result: {
-      user,
-      cohorts,
-      courses,
-    },
+    result: user,
   });
 });
 
@@ -401,6 +417,7 @@ router.post(
     }
 
     const relationship = await database.userActions.addUsersToCourse(data);
+    console.log(relationship);
 
     res.status(StatusCodes.OK).send({
       message: `Success: All course-student relationships were successfully defined.`,

@@ -75,4 +75,59 @@ router.post(
   }
 );
 
+router.put(
+  '/:courseId',
+  async (
+    req: TypedRequestBody<{
+      data: {
+        name: string | undefined;
+        courseId: number | undefined;
+      };
+    }>,
+    res
+  ) => {
+    const { name, courseId } = req.body.data;
+    const numberId = Number(courseId);
+
+    if (!numberId) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A valid course id is required.');
+    }
+
+    if (!name) {
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .send('A valid course name is required.');
+    }
+
+    const cohortDetails = {
+      name,
+    };
+
+    const result = await database.courseActions.updateCourse(
+      numberId,
+      cohortDetails
+    );
+
+    res.status(StatusCodes.OK).send({
+      message: `Success: The course with an id of ${courseId} has been updated with the name ${name}.`,
+      result,
+    });
+  }
+);
+
+router.delete('/:courseId', async (req, res) => {
+  console.log(req.params);
+  const { courseId } = req.params;
+  const numberId = Number(courseId);
+
+  const result = await database.courseActions.deleteCourse(numberId);
+
+  res.status(StatusCodes.OK).send({
+    message: `Success: Deleted course with the id of ${courseId}.`,
+    result,
+  });
+});
+
 export default router;

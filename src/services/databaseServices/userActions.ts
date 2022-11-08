@@ -65,6 +65,18 @@ export async function retrieveAllAdmins() {
 export async function retrieveAllStudents() {
   const users = await prisma.user.findMany({
     where: { isAdmin: false },
+    include: {
+      user_cohort: {
+        include: {
+          cohort: true,
+        },
+      },
+      user_course: {
+        include: {
+          course: true,
+        },
+      },
+    },
   });
 
   return users;
@@ -102,6 +114,30 @@ export async function retrieveAllStudentsNotInCohort(cohortId: number) {
   return users;
 }
 
+// Get All Students In a Specific Cohort that aren't in the current class.
+export async function retrieveAllStudentsInCohortNotInCourse(
+  cohortId: number,
+  courseId: number
+) {
+  const users = await prisma.user.findMany({
+    where: {
+      isAdmin: false,
+      user_cohort: {
+        some: {
+          cohortId,
+        },
+      },
+      user_course: {
+        none: {
+          courseId,
+        },
+      },
+    },
+  });
+
+  return users;
+}
+
 // Get All Students from a Course that don't have a workspace for that course.
 export async function retrieveCourseStudentsWithoutWorkspaces(
   courseId: number
@@ -130,8 +166,20 @@ export async function retrieveSpecificUser(username: string) {
   const user = await prisma.user.findUnique({
     where: { username },
     include: {
-      user_cohort: true,
-      user_course: true,
+      user_cohort: {
+        include: {
+          cohort: true,
+        },
+      },
+      user_course: {
+        include: {
+          course: {
+            include: {
+              cohort: true,
+            },
+          },
+        },
+      },
       workspaces: {
         include: {
           Course: {
@@ -219,6 +267,7 @@ const userActions = {
   retrieveAllStudents,
   retrieveAllStudentsInCohort,
   retrieveAllStudentsNotInCohort,
+  retrieveAllStudentsInCohortNotInCourse,
   retrieveSpecificUser,
   updateUser,
   addUserToCohort,
