@@ -7,13 +7,20 @@ import {
   UpdateServiceCommand,
   DescribeServicesCommand,
 } from '@aws-sdk/client-ecs';
+import { DescribeLoadBalancersCommandOutput } from '@aws-sdk/client-elastic-load-balancing-v2';
 
 import client from '../clients/ecsClient';
-import { retrieveALBTargetGroup } from '../clients/elbv2Client';
+import {
+  createALBTargetGroup,
+  retrieveALBTargetGroup,
+  describeALB,
+  getListener,
+  createRule,
+} from '../clients/elbv2Client';
 import database from './databaseServices';
 import { getRunningTask, stopWorkspace } from './workspaceService';
 
-let targetGroupArn: string;
+let loadBalancer: DescribeLoadBalancersCommandOutput;
 
 // import { stopWorkspace } from './workspaceService';
 
@@ -54,15 +61,55 @@ export const createStudentService = async (
   userId: string,
   courseId: number
 ) => {
-  if (!targetGroupArn) {
-    targetGroupArn = await retrieveALBTargetGroup();
+  if (!loadBalancer) {
+    loadBalancer = await describeALB();
   }
+
+  const DNSName = loadBalancer.LoadBalancers?.[0].DNSName;
+  const loadBalancerARN = loadBalancer.LoadBalancers?.[0].LoadBalancerArn;
+  const vpc = loadBalancer.LoadBalancers?.[0].VpcId;
+
+  if (!DNSName) {
+    throw new Error('ALB DNS Name could not be found.');
+  }
+
+  if (!vpc) {
+    throw new Error('The VPC could not be found.');
+  }
+
+  if (!loadBalancerARN) {
+    throw new Error('The load balancer could not be found.');
+  }
+
+  const listener = await getListener(loadBalancerARN);
+  const defaultListenerArn = listener.Listeners?.[0].ListenerArn;
+
+  if (!defaultListenerArn) {
+    throw new Error('Listener could not be found.');
+  }
+
+  const targetGroup = await createALBTargetGroup(serviceName, vpc);
+
+  console.log(targetGroup);
+
+  const targetGroupARN = targetGroup.TargetGroups?.[0].TargetGroupArn;
+
+  if (!targetGroupARN) {
+    throw new Error('The Target Group could not be found.');
+  }
+
+  const makeRule = await createRule(
+    defaultListenerArn,
+    serviceName,
+    targetGroupARN
+  );
 
   const input = {
     cluster: 'ECS-Cluster',
     LaunchType: 'EC2',
     serviceName,
     taskDefinition,
+    role: 'ecsServiceRole',
     desiredCount: 0,
     deploymentConfiguration: {
       maximumPercent: 100,
@@ -72,22 +119,25 @@ export const createStudentService = async (
     SchedulingStrategy: 'REPLICA',
     loadBalancers: [
       {
-        containerName: 'code-server',
-        containerPort: 8080,
-        targetGroupArn,
+        containerName: 'nginx',
+        containerPort: 80,
+        targetGroupARN,
       },
     ],
   };
 
   try {
+    console.log('Entered Try Catch');
     const command = new CreateServiceCommand(input);
     const response = await client.send(command);
+    console.log(response);
 
     const workspaceDetails = {
       uuid: serviceName,
       desiredCount: 0,
       userId,
       courseId: Number(courseId),
+      // TODO: url: `http://${DNSName}/${serviceName}/?folder=/home/coder`,
     };
 
     if (response) {

@@ -117,6 +117,8 @@ router.post(
 
     const result = await Promise.all(promiseHolder);
 
+    console.log('Result', result);
+
     res.status(StatusCodes.CREATED).json({
       message: 'Success: Created a new student service',
       result,

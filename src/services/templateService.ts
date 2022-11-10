@@ -16,8 +16,10 @@ export interface IContainerSettings {
   name: string;
   image: string;
   memory: number;
-  portMappings: PortSettings[];
-  mountPoints: IMountSettings[];
+  essential: boolean;
+  portMappings?: PortSettings[];
+  mountPoints?: IMountSettings[];
+  links?: string[];
 }
 
 export interface IMountSettings {

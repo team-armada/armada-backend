@@ -1,0 +1,9 @@
+version: '0.1'
+
+services:
+  nginx:
+    image: 'nginx-armada:latest'
+    ports:
+      - '8888:80'
+  code-server:
+    image: jdguillaume/base-code-server-no-auth

@@ -9,8 +9,8 @@ import {
 } from './../services/templateService';
 
 interface ITaskResult {
-  family: string,
-  revision: number,
+  family: string;
+  revision: number;
 }
 
 let fileSystemId: string;
@@ -18,31 +18,6 @@ let fileSystemId: string;
 async function setFileSystemId(): Promise<void> {
   fileSystemId = await retrieveFileSystemId();
 }
-
-// TODO: Test Dynamic Port Mapping via setting hostPort to 0
-// Sample Base Template
-export const coderServerOnly: IContainerDefinition = {
-  containerDefinition: [
-    {
-      name: 'code-server',
-      image: 'jdguillaume/base-code-server-no-auth',
-      memory: 512,
-      portMappings: [
-        {
-          containerPort: 8080,
-          hostPort: 0,
-          protocol: 'tcp',
-        },
-      ],
-      mountPoints: [
-        {
-          containerPath: '/home/coder',
-          sourceVolume: `coder`,
-        },
-      ],
-    },
-  ],
-};
 
 // Function Outline
 // - Base template would start with "template-cohort-course-*"
@@ -53,9 +28,15 @@ export const coderServerOnly: IContainerDefinition = {
 function extractFolderNames(
   containerDefinitions: IContainerDefinition
 ): string[] {
-  return containerDefinitions.containerDefinition.map(definition => {
-    return definition.mountPoints[0].sourceVolume;
+  const volumes: string[] = [];
+
+  containerDefinitions.containerDefinition.forEach(definition => {
+    const retrievedMountPoint = definition.mountPoints?.[0].sourceVolume;
+
+    if (retrievedMountPoint !== undefined) volumes.push(retrievedMountPoint);
   });
+
+  return volumes;
 }
 
 // Creates volume entries based on the taskName and folders passed in.
@@ -133,13 +114,13 @@ export async function createStudentTaskDefinition(
   });
 
   const revision = task?.taskDefinition?.revision;
-  const family = task?.taskDefinition?.family
+  const family = task?.taskDefinition?.family;
 
-  if (revision === undefined || family === undefined){
-    throw new Error('Task Definition Not found.')
+  if (revision === undefined || family === undefined) {
+    throw new Error('Task Definition Not found.');
   }
 
-  return {revision, family}
+  return { revision, family };
 }
 
 async function sendRequest(baseTask: IContainerDefinition) {
@@ -157,8 +138,5 @@ async function sendRequest(baseTask: IContainerDefinition) {
     baseTask.volumes
   );
 
-  return response
+  return response;
 }
-
-
-// console.log(createStudentTaskDefinition('jdguillaume', '3030', 'Work', coderServerOnly))
