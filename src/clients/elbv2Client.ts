@@ -9,6 +9,10 @@ import {
   DescribeListenersCommand,
   CreateRuleCommand,
   CreateRuleCommandInput,
+  ModifyListenerCommandInput,
+  ModifyListenerCommand,
+  TargetGroupTuple,
+  Action,
 } from '@aws-sdk/client-elastic-load-balancing-v2';
 
 const config = {
@@ -103,10 +107,30 @@ export async function createRule(
       },
     ],
     ListenerArn,
-    Priority: 10,
+    Priority: 25,
   };
 
   const command = new CreateRuleCommand(input);
+  const response = await client.send(command);
+  return response;
+}
+
+export async function modifyListener(
+  defaultActions: Action[],
+  targetGroupArn: string,
+  listenerArn: string
+) {
+  const input: ModifyListenerCommandInput = {
+    DefaultActions: defaultActions,
+    ListenerArn: listenerArn,
+  };
+
+  input.DefaultActions?.[0].ForwardConfig?.TargetGroups?.push({
+    TargetGroupArn: targetGroupArn,
+    Weight: 1,
+  });
+
+  const command = new ModifyListenerCommand(input);
   const response = await client.send(command);
   return response;
 }

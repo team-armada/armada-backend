@@ -6,6 +6,7 @@ import {
   DeleteServiceCommand,
   UpdateServiceCommand,
   DescribeServicesCommand,
+  CreateServiceCommandInput,
 } from '@aws-sdk/client-ecs';
 import { DescribeLoadBalancersCommandOutput } from '@aws-sdk/client-elastic-load-balancing-v2';
 
@@ -16,6 +17,7 @@ import {
   describeALB,
   getListener,
   createRule,
+  modifyListener,
 } from '../clients/elbv2Client';
 import database from './databaseServices';
 import { getRunningTask, stopWorkspace } from './workspaceService';
@@ -82,10 +84,15 @@ export const createStudentService = async (
   }
 
   const listener = await getListener(loadBalancerARN);
+  const defaultActions = listener.Listeners?.[0].DefaultActions;
   const defaultListenerArn = listener.Listeners?.[0].ListenerArn;
 
   if (!defaultListenerArn) {
     throw new Error('Listener could not be found.');
+  }
+
+  if (!defaultActions) {
+    throw new Error('Unable to fetch target groups.');
   }
 
   const targetGroup = await createALBTargetGroup(serviceName, vpc);
@@ -98,15 +105,17 @@ export const createStudentService = async (
     throw new Error('The Target Group could not be found.');
   }
 
+  await modifyListener(defaultActions, targetGroupARN, defaultListenerArn);
+
   const makeRule = await createRule(
     defaultListenerArn,
     serviceName,
     targetGroupARN
   );
 
-  const input = {
+  const input: CreateServiceCommandInput = {
     cluster: 'ECS-Cluster',
-    LaunchType: 'EC2',
+    launchType: 'EC2',
     serviceName,
     taskDefinition,
     role: 'ecsServiceRole',
@@ -115,13 +124,13 @@ export const createStudentService = async (
       maximumPercent: 100,
       minimumHealthyPercent: 0,
     },
-    DeploymentController: 'ECS',
-    SchedulingStrategy: 'REPLICA',
+    deploymentController: { type: 'ECS' },
+    schedulingStrategy: 'REPLICA',
     loadBalancers: [
       {
         containerName: 'nginx',
         containerPort: 80,
-        targetGroupARN,
+        targetGroupArn: targetGroupARN,
       },
     ],
   };
