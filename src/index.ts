@@ -8,6 +8,7 @@ import templateRouter from './routes/template';
 import serviceRouter from './routes/service';
 import userRouter from './routes/user';
 import courseRouter from './routes/course';
+import authRouter from './routes/auth';
 
 export interface TypedRequestBody<T> extends Express.Request {
   body: T;
@@ -34,6 +35,7 @@ app.use('/course', courseRouter);
 app.use('/service', serviceRouter);
 app.use('/template', templateRouter);
 app.use('/user', userRouter);
+app.use('/auth', authRouter);
 
 // TODO: Add redirect route for refresh with React Router.
 app.get('/*', (req, res) => {
