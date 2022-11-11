@@ -80,9 +80,6 @@ export const createStudentService = async (
   }
 
   const targetGroup = await createALBTargetGroup(serviceName, vpc);
-
-  console.log(targetGroup);
-
   const targetGroupARN = targetGroup.TargetGroups?.[0].TargetGroupArn;
 
   if (!targetGroupARN) {
@@ -120,10 +117,8 @@ export const createStudentService = async (
   };
 
   try {
-    console.log('Entered Try Catch');
     const command = new CreateServiceCommand(input);
     const response = await client.send(command);
-    console.log(response);
 
     const workspaceDetails = {
       uuid: serviceName,

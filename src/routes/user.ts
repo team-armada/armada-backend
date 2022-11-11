@@ -23,7 +23,6 @@ router.post(
     }>,
     res
   ) => {
-    console.log(req.body.data);
     const { userType, username, firstName, lastName, email } = req.body.data;
 
     if (!username) {
@@ -338,7 +337,6 @@ router.post(
     }>,
     res
   ) => {
-    console.log(req.body);
     const data = req.body.data;
 
     if (!data) {
@@ -417,7 +415,6 @@ router.post(
     }
 
     const relationship = await database.userActions.addUsersToCourse(data);
-    console.log(relationship);
 
     res.status(StatusCodes.OK).send({
       message: `Success: All course-student relationships were successfully defined.`,

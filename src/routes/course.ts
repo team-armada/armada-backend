@@ -118,7 +118,6 @@ router.put(
 );
 
 router.delete('/:courseId', async (req, res) => {
-  console.log(req.params);
   const { courseId } = req.params;
   const numberId = Number(courseId);
 
