@@ -3,15 +3,11 @@ import {
   DescribeTargetGroupsCommand,
   CreateTargetGroupCommand,
   DescribeLoadBalancersCommand,
-  CreateTargetGroupCommandInput,
-  ModifyTargetGroupAttributesCommandInput,
-  ModifyTargetGroupAttributesCommand,
   DescribeListenersCommand,
   CreateRuleCommand,
   CreateRuleCommandInput,
   ModifyListenerCommandInput,
   ModifyListenerCommand,
-  TargetGroupTuple,
   Action,
 } from '@aws-sdk/client-elastic-load-balancing-v2';
 
@@ -22,6 +18,8 @@ const config = {
     SecretAccessKey: process.env.AWS_IAM_SECRET_ACCESS_KEY,
   },
 };
+
+let precedence = 1;
 
 const client = new ElasticLoadBalancingV2Client(config);
 
@@ -91,6 +89,7 @@ export async function createRule(
   serviceName: string,
   targetGroupArn: string
 ) {
+  precedence += 1;
   const input: CreateRuleCommandInput = {
     Actions: [
       {
@@ -107,7 +106,7 @@ export async function createRule(
       },
     ],
     ListenerArn,
-    Priority: 25,
+    Priority: precedence,
   };
 
   const command = new CreateRuleCommand(input);

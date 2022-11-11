@@ -24,22 +24,6 @@ import { getRunningTask, stopWorkspace } from './workspaceService';
 
 let loadBalancer: DescribeLoadBalancersCommandOutput;
 
-// import { stopWorkspace } from './workspaceService';
-
-//This creates a service for a student with zero running tasks
-// const input = {
-//   data: {
-//     cluster: 'ECS-Cluster',
-//     serviceName: `${cohort}-${course}-${student}`,
-//     taskDefinition: `${cohort}-${course}-${student}`,
-//     desiredCount: 0,
-//     deploymentConfiguration: {
-//       maximumPercent: 100,
-//       minimumHealthyPercent: 0
-//     },
-//   },
-// };
-
 export const describeStudentService = async (serviceName: string) => {
   const input = {
     cluster: 'ECS-Cluster',
@@ -146,7 +130,7 @@ export const createStudentService = async (
       desiredCount: 0,
       userId,
       courseId: Number(courseId),
-      // TODO: url: `http://${DNSName}/${serviceName}/?folder=/home/coder`,
+      website: `http://${DNSName}/${serviceName}/?folder=/home/coder`,
     };
 
     if (response) {
@@ -160,28 +144,6 @@ export const createStudentService = async (
     }
   }
 };
-
-// Retrieves all student services
-
-// From AWS
-// export const getAllStudentServices = async () => {
-//   const input = {
-//     cluster: 'ECS-Cluster',
-//     maxResults: 100,
-//     sort: 'ASC',
-//     status: 'ACTIVE',
-//   };
-
-//   try {
-//     const command = new ListServicesCommand(input);
-//     const response = await client.send(command);
-//     return response;
-//   } catch (err: unknown) {
-//     if (err instanceof Error) {
-//       console.log(err.message);
-//     }
-//   }
-// };
 
 export const getAllStudentServices = async () => {
   const workspaces = await database.workspaceActions.retrieveAllWorkspaces();

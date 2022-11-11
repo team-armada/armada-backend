@@ -30,6 +30,7 @@ CREATE TABLE "public"."Course" (
 CREATE TABLE "public"."Workspace" (
   uuid VARCHAR(255) PRIMARY KEY NOT NULL,
   desiredCount INTEGER NOT NULL,
+  website VARCHAR(255) NOT NULL,
   userId VARCHAR(255) NOT NULL,
   courseId INTEGER NOT NULL,
   FOREIGN KEY (courseId) REFERENCES "public"."Course"(id) ON DELETE CASCADE,

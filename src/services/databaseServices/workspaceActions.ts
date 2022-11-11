@@ -3,7 +3,7 @@ import { Workspace } from '@prisma/client';
 
 // Create a Workspace
 export async function createWorkspace(workspaceDetails: Workspace) {
-  const { uuid, desiredCount, userId, courseId } = workspaceDetails;
+  const { uuid, desiredCount, userId, courseId, website } = workspaceDetails;
 
   const workspace = await prisma.workspace.create({
     data: {
@@ -11,6 +11,7 @@ export async function createWorkspace(workspaceDetails: Workspace) {
       desiredCount,
       userId,
       courseId,
+      website,
     },
   });
 
