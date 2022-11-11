@@ -21,7 +21,7 @@ router.get('/cognito', async (req, res) => {
   };
 
   res.status(StatusCodes.OK).send({
-    message: 'Congito authentication fetches successfully.',
+    message: 'Cognito authentication fetches successfully.',
     result,
   });
 });
