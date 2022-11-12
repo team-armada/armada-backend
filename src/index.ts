@@ -29,6 +29,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// Static Files
+app.use(express.static('build'));
+
 // Routes
 app.use('/api/cohort', cohortRouter);
 app.use('/api/course', courseRouter);
@@ -41,7 +44,7 @@ app.use('/api/auth', authRouter);
 app.get('/*', (req, res) => {
   res.sendFile(
     // Specify route to entry point for front-end build.
-    '',
+    '/build/index.html',
     err => {
       if (err) {
         res.status(500).send(err);
