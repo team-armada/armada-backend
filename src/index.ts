@@ -30,12 +30,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Routes
-app.use('/cohort', cohortRouter);
-app.use('/course', courseRouter);
-app.use('/service', serviceRouter);
-app.use('/template', templateRouter);
-app.use('/user', userRouter);
-app.use('/auth', authRouter);
+app.use('/api/cohort', cohortRouter);
+app.use('/api/course', courseRouter);
+app.use('/api/service', serviceRouter);
+app.use('/api/template', templateRouter);
+app.use('/api/user', userRouter);
+app.use('/api/auth', authRouter);
 
 // TODO: Add redirect route for refresh with React Router.
 app.get('/*', (req, res) => {
