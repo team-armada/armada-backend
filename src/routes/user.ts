@@ -83,7 +83,7 @@ router.get('/all', async (req, res) => {
 });
 
 /**
- * Get all students from postgres database
+ * Get all admin users from postgres database
  */
 router.get('/allAdmins', async (req, res) => {
   const users = await database.userActions.retrieveAllAdmins();
