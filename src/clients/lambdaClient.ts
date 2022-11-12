@@ -17,9 +17,6 @@ export async function createEFSFolders(payload: string) {
       Payload: new TextEncoder().encode(JSON.stringify({ directory: payload })),
     });
     const response = await client.send(command);
-
-    // TODO: If we want the response, we'll have to parse it from TextEncoder
-    // Example Solution: const responseObject = JSON.parse(new TextDecoder('utf-8').decode(result.Payload) || '{}');
     return response;
   } catch (err: unknown) {
     if (err instanceof Error) {

@@ -8,10 +8,6 @@ import client from '../clients/ecsClient';
 /**
  * Get All Workspace Templates
  */
-
-// TODO: Support filter via query string (task:group == family:lowMemory is how you search for a specific task definition).
-
-// TODO: Make filter optional.
 export const getRunningTask = async (serviceName: string) => {
   const input = {
     cluster: 'ECS-Cluster',

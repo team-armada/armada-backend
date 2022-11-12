@@ -3,8 +3,6 @@ import { AdminCreateUserCommand } from '@aws-sdk/client-cognito-identity-provide
 import client from '../clients/cognitoClient';
 import database from './databaseServices';
 
-// TODO: Start with one admin user already!
-
 export const createUser = async (
   userType: string,
   username: string,
