@@ -53,5 +53,6 @@ RUN npx prisma generate
 RUN chmod 777 ./node_modules/.prisma/client/index.js
 
 EXPOSE 3000
+EXPOSE 5432
 
 CMD ["npm", "start" ]

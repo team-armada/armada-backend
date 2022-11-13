@@ -1,0 +1,10 @@
+version: '1.0'
+
+services:
+  nginx:
+    image: 'armada-app-nginx:latest'
+    ports:
+      - '8888:80'
+  armada-app:
+    image: jdguillaume/armada-application
+    env_file: ../../../.env
