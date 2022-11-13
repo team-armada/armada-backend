@@ -53,5 +53,4 @@ CREATE TABLE "public"."User_Course" (
   PRIMARY KEY (userId, courseId)
 );
 
-
--- TODO; Insert Admin User into Database
+INSERT INTO "User" (uuid, username, email, firstname, lastname, isadmin) VALUES ('original_admin', 'armadaadmin', 'thefourofours@gmail.com', 'Armada', 'Admin', TRUE);
