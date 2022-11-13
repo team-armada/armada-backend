@@ -9,6 +9,7 @@ import serviceRouter from './routes/service';
 import userRouter from './routes/user';
 import courseRouter from './routes/course';
 import authRouter from './routes/auth';
+import path from 'path';
 
 export interface TypedRequestBody<T> extends Express.Request {
   body: T;
@@ -30,7 +31,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Static Files
-app.use(express.static('build'));
+app.use(express.static(path.join(__dirname, 'build')));
 
 // Routes
 app.use('/api/cohort', cohortRouter);
@@ -40,11 +41,10 @@ app.use('/api/template', templateRouter);
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 
-// TODO: Add redirect route for refresh with React Router.
 app.get('/*', (req, res) => {
   res.sendFile(
     // Specify route to entry point for front-end build.
-    '/build/index.html',
+    path.join(__dirname, 'build', 'index.html'),
     err => {
       if (err) {
         res.status(500).send(err);
