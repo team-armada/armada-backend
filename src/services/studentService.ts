@@ -67,6 +67,8 @@ export const createStudentService = async (
     throw new Error('The load balancer could not be found.');
   }
 
+  console.log('Resources found');
+
   const listener = await getListener(loadBalancerARN);
   const defaultActions = listener.Listeners?.[0].DefaultActions;
   const defaultListenerArn = listener.Listeners?.[0].ListenerArn;
@@ -79,20 +81,18 @@ export const createStudentService = async (
     throw new Error('Unable to fetch target groups.');
   }
 
-  const targetGroup = await createALBTargetGroup(serviceName, vpc);
+  const targetGroup = await createALBTargetGroup(
+    serviceName,
+    vpc,
+    loadBalancerARN
+  );
   const targetGroupARN = targetGroup.TargetGroups?.[0].TargetGroupArn;
 
   if (!targetGroupARN) {
     throw new Error('The Target Group could not be found.');
   }
 
-  await modifyListener(defaultActions, targetGroupARN, defaultListenerArn);
-
-  const makeRule = await createRule(
-    defaultListenerArn,
-    serviceName,
-    targetGroupARN
-  );
+  await createRule(defaultListenerArn, serviceName, targetGroupARN);
 
   const input: CreateServiceCommandInput = {
     cluster: 'ECS-Cluster',

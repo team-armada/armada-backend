@@ -1,5 +1,7 @@
+import { DescribeLoadBalancersCommandOutput } from '@aws-sdk/client-elastic-load-balancing-v2';
 import { Router } from 'express';
 import { StatusCodes } from 'http-status-codes';
+
 const router = Router();
 
 /**
@@ -11,7 +13,7 @@ router.get('/cognito', async (req, res) => {
     userPoolId: process.env.USER_POOL_ID,
     userPoolWebClientId: process.env.USER_POOL_WEB_CLIENT_ID,
     cookieStorage: {
-      domain: 'localhost',
+      domain: `localhost`,
       path: '/',
       expires: 365,
       sameSite: 'strict',

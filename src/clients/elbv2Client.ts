@@ -57,13 +57,16 @@ export async function retrieveALBTargetGroup() {
   return targetGroupArn;
 }
 
-export async function createALBTargetGroup(name: string, vpc: string) {
+export async function createALBTargetGroup(
+  name: string,
+  vpc: string,
+  loadBalancerArn: string
+) {
+  console.log(loadBalancerArn);
   const input = {
     Name: name,
     HealthCheckPath: '/healthz',
-    LoadBalancerArns: [
-      'ArmadaLoadBalancer-1280959169.us-east-1.elb.amazonaws.com',
-    ],
+    loadBalancerArn: [loadBalancerArn],
     Port: 80,
     Protocol: 'HTTP',
     VpcId: vpc,

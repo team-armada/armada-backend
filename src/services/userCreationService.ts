@@ -26,6 +26,8 @@ export const createUser = async (
     const command = new AdminCreateUserCommand(input);
     const response = await client.send(command);
 
+    console.log(response);
+
     const attributes = response.User?.Attributes;
     const uuid = attributes?.find(attribute => attribute.Name === 'sub')?.Value;
 
@@ -44,6 +46,8 @@ export const createUser = async (
   } catch (err: unknown) {
     if (err instanceof Error) {
       console.log(err.message);
+      console.log(err);
+      return err.message;
     }
   }
 };
