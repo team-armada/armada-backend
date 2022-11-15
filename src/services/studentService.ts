@@ -136,6 +136,7 @@ export const createStudentService = async (
   } catch (err: unknown) {
     if (err instanceof Error) {
       console.log(err.message);
+      return err.message;
     }
   }
 };
