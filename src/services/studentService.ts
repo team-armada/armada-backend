@@ -13,7 +13,6 @@ import { DescribeLoadBalancersCommandOutput } from '@aws-sdk/client-elastic-load
 import client from '../clients/ecsClient';
 import {
   createALBTargetGroup,
-  retrieveALBTargetGroup,
   describeALB,
   getListener,
   createRule,
@@ -86,20 +85,20 @@ export const createStudentService = async (
     vpc,
     loadBalancerARN
   );
-  const targetGroupARN = targetGroup.TargetGroups?.[0].TargetGroupArn;
 
-  if (!targetGroupARN) {
+  const targetGroupArn = targetGroup.TargetGroups?.[0].TargetGroupArn;
+
+  if (!targetGroupArn) {
     throw new Error('The Target Group could not be found.');
   }
 
-  await createRule(defaultListenerArn, serviceName, targetGroupARN);
+  await createRule(defaultListenerArn, serviceName, targetGroupArn);
 
   const input: CreateServiceCommandInput = {
     cluster: 'ECS-Cluster',
     launchType: 'EC2',
     serviceName,
     taskDefinition,
-    role: 'ecsServiceRole',
     desiredCount: 0,
     deploymentConfiguration: {
       maximumPercent: 100,
@@ -109,9 +108,9 @@ export const createStudentService = async (
     schedulingStrategy: 'REPLICA',
     loadBalancers: [
       {
+        targetGroupArn: targetGroupArn,
         containerName: 'nginx',
         containerPort: 80,
-        targetGroupArn: targetGroupARN,
       },
     ],
   };
@@ -119,6 +118,8 @@ export const createStudentService = async (
   try {
     const command = new CreateServiceCommand(input);
     const response = await client.send(command);
+
+    console.log('The response is: ', response);
 
     const workspaceDetails = {
       uuid: serviceName,
@@ -135,6 +136,7 @@ export const createStudentService = async (
     return response;
   } catch (err: unknown) {
     if (err instanceof Error) {
+      console.log(err);
       console.log(err.message);
       return err.message;
     }

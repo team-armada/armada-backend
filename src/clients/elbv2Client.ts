@@ -9,6 +9,7 @@ import {
   ModifyListenerCommandInput,
   ModifyListenerCommand,
   Action,
+  CreateTargetGroupCommandInput,
 } from '@aws-sdk/client-elastic-load-balancing-v2';
 
 const config = {
@@ -63,10 +64,9 @@ export async function createALBTargetGroup(
   loadBalancerArn: string
 ) {
   console.log(loadBalancerArn);
-  const input = {
+  const input: CreateTargetGroupCommandInput = {
     Name: name,
     HealthCheckPath: '/healthz',
-    loadBalancerArn: [loadBalancerArn],
     Port: 80,
     Protocol: 'HTTP',
     VpcId: vpc,
