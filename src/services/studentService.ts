@@ -66,8 +66,6 @@ export const createStudentService = async (
     throw new Error('The load balancer could not be found.');
   }
 
-  console.log('Resources found');
-
   const listener = await getListener(loadBalancerARN);
   const defaultActions = listener.Listeners?.[0].DefaultActions;
   const defaultListenerArn = listener.Listeners?.[0].ListenerArn;
@@ -118,8 +116,6 @@ export const createStudentService = async (
   try {
     const command = new CreateServiceCommand(input);
     const response = await client.send(command);
-
-    console.log('The response is: ', response);
 
     const workspaceDetails = {
       uuid: serviceName,

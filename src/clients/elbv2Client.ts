@@ -63,7 +63,6 @@ export async function createALBTargetGroup(
   vpc: string,
   loadBalancerArn: string
 ) {
-  console.log(loadBalancerArn);
   const input: CreateTargetGroupCommandInput = {
     Name: name,
     HealthCheckPath: '/healthz',
