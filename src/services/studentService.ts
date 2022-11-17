@@ -2,7 +2,6 @@
 
 import {
   CreateServiceCommand,
-  ListServicesCommand,
   DeleteServiceCommand,
   UpdateServiceCommand,
   DescribeServicesCommand,
@@ -16,7 +15,6 @@ import {
   describeALB,
   getListener,
   createRule,
-  modifyListener,
 } from '../clients/elbv2Client';
 import database from './databaseServices';
 import { getRunningTask, stopWorkspace } from './workspaceService';
