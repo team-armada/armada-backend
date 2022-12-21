@@ -25,7 +25,6 @@ PORT=3000
 AWS_REGION=us-east-1
 AWS_IAM_ACCESS_KEY_ID="your-access-key"
 AWS_IAM_SECRET_ACCESS_KEY="your-secret-key"
-
 DATABASE_URL="your-postgres-url"
 USER_POOL_ID="aws-cognito-url"
 USER_POOL_WEB_CLIENT_ID="aws-cognito-user-pool-url"
